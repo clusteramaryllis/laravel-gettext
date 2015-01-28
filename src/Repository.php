@@ -1,6 +1,7 @@
 <?php namespace Clusteramaryllis\Gettext;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler as Compiler;
 use Clusteramaryllis\Gettext\Exception\ResourceNotFoundException;
 
@@ -51,7 +52,7 @@ class Repository
             $files = $this->files->glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
 
             foreach ($files as $file) {
-                if (! ends_with(strtolower($file), '.blade.php')) {
+                if (! Str::endsWith(strtolower($file), '.blade.php')) {
                     continue;
                 }
 
