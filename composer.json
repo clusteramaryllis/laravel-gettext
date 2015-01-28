@@ -20,7 +20,7 @@
     },
     "suggest": {
         "ext-gettext": "*",
-        "lcbridge/php-gettext": "Required if gettext extension not present (dev-master)."
+        "lcbridge/php-gettext": "Required if php_gettext extension not instaled (dev-master)."
     },
     "autoload": {
         "psr-4": {
