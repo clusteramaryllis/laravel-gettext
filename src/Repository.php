@@ -303,6 +303,14 @@ class Repository
             return $result;
         }
 
+        if (! $this->files->exists($path)) {
+            throw new ResourceNotFoundException("File\Directory does not exist at path {$path}");
+        }
+
+        if (! $this->files->exists($relativeTo)) {
+            throw new ResourceNotFoundException("File\Directory does not exist at path {$relativeTo}");
+        }
+
         $path       = str_replace('\\', '/', realpath($path));
         $relativeTo = str_replace('\\', '/', realpath($relativeTo));
 
