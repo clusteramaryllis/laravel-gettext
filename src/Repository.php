@@ -43,7 +43,6 @@ class Repository
      */
     public function compileBladeViews(array $paths, $storagePath)
     {
-        $this->files->deleteDirectory($storagePath);
         $this->makeDestination($storagePath);
 
         $compiler = new Compiler($this->files, $storagePath);
