@@ -1,0 +1,31 @@
+{
+    "name": "clusteramaryllis/gettext",
+    "description": "Adds localization support to laravel applications with PoEdit and Gettext",
+    "keywords": ["php", "laravel", "gettext", "laravel-gettext", "poedit", "localization", "translation"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Clusteramaryllis",
+            "email": "clusteramaryllis77@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/config": "4.2.*",
+        "illuminate/view": "4.2.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "~0.9",
+        "phpunit/phpunit": "~4.0"
+    },
+    "suggest": {
+        "ext-gettext": "*",
+        "lcbridge/php-gettext": "Required if gettext extension not present (dev-master)."
+    },
+    "autoload": {
+        "psr-4": {
+            "Clusteramaryllis\\Gettext\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
