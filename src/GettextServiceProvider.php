@@ -25,7 +25,7 @@ class GettextServiceProvider extends ServiceProvider
     {
         $this->package(static::DEFAULT_NAMESPACE, static::DEFAULT_NAMESPACE, __DIR__);
 
-        require_once __DIR__.'/helpers.php';
+        require_once __DIR__."/helpers.php";
 
         $this->bootConfig();
         $this->bootCreateCommand();

@@ -1,51 +1,48 @@
 <?php
 
-use \Clusteramaryllis\Gettext\Facade\Gettext;
+use Clusteramaryllis\Gettext\Facade\Gettext;
 
-if (! function_exists('__dgettext')) {
-    function __dgettext($message)
+if (! function_exists('pgettext')) {
+    function pgettext($context, $message)
     {
-        return Gettext::dGettext($message);
+        return Gettext::pGetText($context, $message);
     }
 }
 
-if (! function_exists('__dngettext')) {
-    function __dngettext($msgid1, $msgid2, $n)
+if (! function_exists('npgettext')) {
+    function npgettext($context, $msgid1, $msgid2, $n = 1)
     {
-        return Gettext::dNGettext($msgid1, $msgid2, $n);
+        return Gettext::nPGettext($context, $msgid1, $msgid2, $n);
     }
 }
 
-if (! function_exists('__dcgettext')) {
-    function __dcgettext($message, $category = LC_ALL)
+if (! function_exists('dcpgettext')) {
+    function dcpgettext($domain, $context, $message, $category = LC_ALL)
     {
-        return Gettext::dCGettext($message, $category);
+        return Gettext::dCPGetText($domain, $context, $message, $category);
     }
 }
 
-if (! function_exists('__dcngettext')) {
-    function __dcngettext($msgid1, $msgid2, $n, $category = LC_ALL)
+if (! function_exists('dcnpgettext')) {
+    function dcnpgettext($domain, $context, $msgid1, $msgid2, $n = 1, $category = LC_ALL)
     {
-        return Gettext::dCNGettext($msgid1, $msgid2, $n, $category);
+        return Gettext::dCNPGettext($domain, $context, $msgid1, $msgid2, $n, $category);
     }
 }
 
 if (! function_exists('__bindtextdomain')) {
     function __bindtextdomain($domain, $directory, $codeset = 'UTF-8')
     {
-        Gettext::setTextDomain($domain, $directory, $codeset);
-
-        $domain = Gettext::getCurrentDomain();
-
-        return $domain['directory'];
+        return Gettext::bindTextDomain($domain, $directory, $codeset);
     }
 }
 
 if (! function_exists('__setlocale')) {
-    function __setlocale($category, $locale, $locales = array())
+    function __setlocale($category)
     {
-        Gettext::setLocale($category, $locale, $locales);
-
-        return Gettext::getLocale();
+        return forward_static_call_array(
+            array('Clusteramaryllis\Gettext\Facade\Gettext', 'setLocale'),
+            func_get_args()
+        );
     }
 }

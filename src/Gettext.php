@@ -1,232 +1,251 @@
 <?php namespace Clusteramaryllis\Gettext;
 
-use Clusteramaryllis\Gettext\Exception\DomainNotSetException;
+use InvalidArgumentException;
 
 class Gettext
 {
     /**
-     * List of domains.
-     *
-     * @var array
-     */
-    protected $domains = array();
-
-    /**
-     * Localse.
-     * 
-     * @var string
-     */
-    protected $locale = '';
-
-    /**
-     * Array of current domain.
-     *
-     * @var array
-     */
-    protected $currentDomain = array();
-
-    /**
-     * Set textdomain (with optional codeset).
+     * bindtextdomain (with optional codeset).
      *
      * @param  string $domain
      * @param  string $directory
      * @param  string $codeset
-     * @return $this
+     * @return string
      */
-    public function setTextDomain($domain, $directory, $codeset = 'UTF-8')
+    public function bindTextDomain($domain, $directory, $codeset = 'UTF-8')
     {
-        if (! array_key_exists($domain, $this->domains)) {
-            $this->domains[$domain] = array(
-                'domain'    => $domain,
-                'directory' => $directory,
-                'codeset'   => $codeset,
-            );
+        bindtextdomain($domain, $directory);
 
-            bindtextdomain($this->domains[$domain]['domain'], $this->domains[$domain]['directory']);
-            bind_textdomain_codeset($this->domains[$domain]['domain'], $this->domains[$domain]['codeset']);
-        } else {
-            if ($this->domains[$domain]['directory'] !== $directory) {
-                $this->domains[$domain]['directory'] = $directory;
-
-                bindtextdomain($this->domains[$domain]['domain'], $this->domains[$domain]['directory']);
-            }
-
-            if ($this->domains[$domain]['codeset'] !== $codeset) {
-                $this->domains[$domain]['codeset'] = $codeset;
-
-                bind_textdomain_codeset($this->domains[$domain]['domain'], $this->domains[$domain]['codeset']);
-            }
-        }
-
-        $this->currentDomain = $this->domains[$domain];
-
-        return $this;
-    }
-
-    /**
-     * Set category.
-     *
-     * @param  string $category
-     * @return $this
-     */
-    public function setCategory($category)
-    {
-        if (! array_key_exists('category', $this->domains[$this->currentDomain['domain']]) ||
-            $this->domains[$this->currentDomain['domain']]['category'] !== $category) {
-            $this->domains[$this->currentDomain['domain']]['category'] = $category;
-        }
-
-        $this->currentDomain = $this->domains[$this->currentDomain['domain']];
-
-        return $this;
+        return bind_textdomain_codeset($domain, $codeset);
     }
 
     /**
      * Set locale.
-     * 
-     * @param int    $category 
-     * @param string $locale   
-     * @param array  $locales
-     */
-    public function setLocale($category, $locale, $locales = array(), $codeset = 'UTF-8')
-    {
-        $locale      = $locale.".{$codeset}";
-        $strCategory = $this->checkCategory($category);
-
-        if (empty($locales)) {
-            $locales = array($locale);
-        }
-
-        @putenv("{$strCategory}={$locale}");
-        @putenv("LANG={$locale}");
-
-        if (function_exists('T_setlocale')) {
-            $this->locale = T_setlocale($category, $locale);
-        } else {
-            $this->locale = setlocale($category, $locales);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get locale.
-     * 
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
-     * Get domain.
-     * 
-     * @param  string $name
+     *
+     * @param  int   $category
      * @return mixed
      */
-    public function getDomain($name = null)
+    public function setLocale($category)
     {
-        if (is_null($name)) {
-            return $this->domains;
+        $argsCount = func_num_args();
+
+        if ($argsCount < 2) {
+            throw new InvalidArgumentException(
+                __CLASS__."::setLocale() expects at least 2 parameters, {$argsCount} given"
+            );
         }
 
-        if (array_key_exists($name, $this->domains)) {
-            return $this->domains[$name];
+        $strCategory = $this->checkCategory($category);
+        $preLocales  = func_get_args();
+
+        array_shift($preLocales);
+
+        if (is_array($preLocales[0])) {
+            $primaryLocale = $preLocales[0][0];
+            $locales       = $preLocales[0];
+        } else {
+            $primaryLocale = $preLocales[0];
+            $locales       = $preLocales;
         }
 
-        return;
+        @putenv("LANG={$primaryLocale}");
+        @putenv("LANGUAGE={$primaryLocale}");
+        @putenv("{$strCategory}={$primaryLocale}");
+
+        $locale = setlocale($category, $locales);
+
+        if ($locale === false && function_exists('T_setlocale')) {
+            $locale = T_setlocale($category, $primaryLocale);
+        }
+
+        return $locale;
     }
 
     /**
-     * Get current domain.
+     * Text domain.
      *
-     * @return array
+     * @param  string $domain
+     * @return string
      */
-    public function getCurrentDomain()
+    public function textDomain($domain = null)
     {
-        return $this->currentDomain;
+        return textdomain($domain);
+    }
+
+    /**
+     * gettext wrapper.
+     *
+     * @param  string $message
+     * @return string
+     */
+    public function getText($message)
+    {
+        return gettext($domain, $message);
     }
 
     /**
      * dgettext wrapper.
      *
+     * @param  string $domain
      * @param  string $message
      * @return string
      */
-    public function dGettext($message)
+    public function dGetText($domain, $message)
     {
-        $this->checkCurrentDomain();
-
-        return dgettext($this->currentDomain['domain'], $message);
-    }
-
-    /**
-     * dngettext wrapper.
-     *
-     * @param  string $msgid1
-     * @param  string $msgid2
-     * @param  int    $n
-     * @return string
-     */
-    public function dNGettext($msgid1, $msgid2, $n)
-    {
-        $this->checkCurrentDomain();
-
-        return dngettext($this->currentDomain['domain'], $msgid1, $msgid2, $n);
+        return dgettext($domain, $message);
     }
 
     /**
      * dcgettext wrapper.
      *
+     * @param  string $domain
      * @param  string $message
      * @param  int    $category
      * @return string
      */
-    public function dCGettext($message, $category = LC_ALL)
+    public function dCGetText($domain, $message, $category = LC_ALL)
     {
-        $this->checkCurrentDomain();
-
-        $this->setCategory($category);
-
-        return dcgettext($this->currentDomain['domain'], $message, $this->currentDomain['category']);
+        return dcgettext($domain, $message, $category);
     }
 
     /**
      * dcngettext wrapper.
+     *
+     * @param  string $domain
      * @param  string $msgid1
      * @param  string $msgid2
      * @param  int    $n
      * @param  int    $category
      * @return string
      */
-    public function dCNGettext($msgid1, $msgid2, $n, $category = LC_ALL)
+    public function dCNGetText($domain, $msgid1, $msgid2, $n = 1, $category = LC_ALL)
     {
-        $this->checkCurrentDomain();
-
-        $this->setCategory($category);
-
-        return dcngettext($this->currentDomain['domain'], $msgid1, $msgid2, $n, $this->currentDomain['category']);
+        return dcngettext($domain, $msgid1, $msgid2, $n, $category);
     }
 
     /**
-     * Check the existence of current domain.
+     * dcpgettext wrapper.
      *
-     * @return void
-     * @throws \Clusteramaryllis\Gettext\Exception\CurrentDomainNotSetException
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $message
+     * @param  int    $category
+     * @return string
      */
-    protected function checkCurrentDomain()
+    public function dCPGetText($domain, $context, $message, $category = LC_ALL)
     {
-        if (empty($this->currentDomain)) {
-            throw new DomainNotSetException("Current domain must be set by calling ".__CLASS__."::setTextDomain(\$domain, \$directory, \$codeset)");
-        }
+        return _dcpgettext($domain, $context, $message, $category);
+    }
+
+    /**
+     * dcnpgettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @param  int    $category
+     * @return string
+     */
+    public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n = 1, $category = LC_ALL)
+    {
+        $translation = _get_reader($domain, $category);
+
+        return _encode($translation->npgettext($domain, $context, $msgid1, $msgid2, $n, $category));
+    }
+
+    /**
+     * dngettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function dNGetText($domain, $msgid1, $msgid2, $n = 1)
+    {
+        return dngettext($domain, $msgid1, $msgid2, $n);
+    }
+
+    /**
+     * dnpgettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n = 1)
+    {
+        $translation = _get_reader($domain);
+
+        return _encode($translation->npgettext($domain, $context, $msgid1, $msgid2, $n));
+    }
+
+    /**
+     * dpgettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $message
+     * @return string
+     */
+    public function dPGetText($domain, $context, $message)
+    {
+        return _dpgettext($domain, $context, $message);
+    }
+
+    /**
+     * dngettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function nGetText($msgid1, $msgid2, $n = 1)
+    {
+        return ngettext($msgid1, $msgid2, $n);
+    }
+
+    /**
+     * npgettext wrapper.
+     *
+     * @param  string $context
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function nPGetText($context, $msgid1, $msgid2, $n = 1)
+    {
+        $translation = _get_reader();
+
+        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
+    }
+
+    /**
+     * pgettext wrapper.
+     * 
+     * @param  string $context
+     * @param  string $message
+     * @return string          
+     */
+    public function pGetText($context, $message)
+    {
+        return _pgettext($context, $message);
     }
 
     /**
      * Check category.
-     * 
+     *
      * @param  int    $category
-     * @return string           
+     * @return string
      */
     protected function checkCategory($category)
     {
@@ -239,7 +258,7 @@ class Gettext
 
             case 2:
                 return "LC_TIME";
-            
+
             case 3:
                 return "LC_COLLATE";
 
