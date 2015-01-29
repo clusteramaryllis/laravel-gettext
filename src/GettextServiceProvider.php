@@ -67,9 +67,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function registerGettext()
     {
         $this->app['gettext'] = $this->app->share(function ($app) {
-            $gettext = new Gettext();
-
-            return $gettext->setTextDomain('messages', __DIR__."/locale");
+            return new Gettext();
         });
     }
 
