@@ -52,13 +52,11 @@ class Gettext
         @putenv("LANG={$primaryLocale}");
         @putenv("LANGUAGE={$primaryLocale}");
 
-        $locale = setlocale($category, $locales);
-
-        if ($locale === false && function_exists('T_setlocale')) {
-            $locale = T_setlocale($category, $primaryLocale);
+        foreach ($locales as $locale) {
+            _setlocale($category, $locale);
         }
 
-        return $locale;
+        return $primaryLocale;
     }
 
     /**
