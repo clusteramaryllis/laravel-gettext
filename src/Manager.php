@@ -54,9 +54,13 @@ class Manager
      * @param  string $default
      * @return mixed
      */
-    protected function getConfig($name, $default)
+    protected function getConfig($name, $default = null)
     {
-        return $name ? $this->config[$name] : $default;
+        if (array_key_exists($name, $this->config)) {
+          return $this->config[$name];
+        }
+
+        return $default;
     }
 
     /**
@@ -131,14 +135,14 @@ class Manager
     }
 
     /**
-     * Set the default locales.
+     * Set the default languages.
      *
-     * @param  array $locales
+     * @param  array $languages
      * @return $this
      */
-    public function setLocales(array $locales)
+    public function setLanguages(array $languages)
     {
-        return $this->setConfig("locales", $locales);
+        return $this->setConfig("languages", $languages);
     }
 
     /**
@@ -150,17 +154,6 @@ class Manager
     public function setKeywords(array $keywords)
     {
         return $this->setConfig("keywords", $keywords);
-    }
-
-    /**
-     * Set the default encoding.
-     *
-     * @param  string $encoding
-     * @return $this
-     */
-    public function setEncoding($encoding)
-    {
-        return $this->setConfig("encoding", $encoding);
     }
 
     /**
@@ -183,17 +176,6 @@ class Manager
     public function setProject($project)
     {
         return $this->setConfig("project_name", $project);
-    }
-
-    /**
-     * Set the default poedit verison.
-     *
-     * @param  string $version
-     * @return $this
-     */
-    public function setVersion($version)
-    {
-        return $this->setConfig("poedit_version", $version);
     }
 
     /**
@@ -251,14 +233,14 @@ class Manager
     }
 
     /**
-     * Get the default locale.
+     * Get the default languages.
      *
      * @param  array $default
      * @return array
      */
-    public function getLocales($default = array())
+    public function getLanguages($default = array())
     {
-        return $this->getConfig("locales", $default);
+        return $this->getConfig("languages", $default);
     }
 
     /**
@@ -303,16 +285,5 @@ class Manager
     public function getEncoding($default = null)
     {
         return $this->getConfig("encoding", $default);
-    }
-
-    /**
-     * Get the default poedit version.
-     *
-     * @param  mixed  $default
-     * @return string
-     */
-    public function getVersion($default = null)
-    {
-        return $this->getConfig("poedit_version", $default);
     }
 }

@@ -77,8 +77,8 @@ class Repository
      * @param  string $encoding
      * @param  string $project
      * @param  string $translator
-     * @param  string $keywords
-     * @param  string $version
+     * @param  array  $keywords
+     * @param  string $pluralForms
      * @param  string $timestamp
      * @return string
      */
@@ -91,7 +91,7 @@ class Repository
         $project,
         $translator,
         $keywords,
-        $version,
+        $pluralForms = null,
         $timestamp = null
     ) {
         $timestamp  = $timestamp ?: date("Y-m-d H:iO");
@@ -115,6 +115,11 @@ class Repository
             }
         }
 
+        // Plural form
+        $strPluralForms = is_string($pluralForms) ? 
+            "\"Plural-Forms: {$pluralForms}\\n\"\n" :
+            "";
+
         $this->makeDestination($domainPath);
 
         $relPath = $this->relativePath($domainPath, $this->basePath);
@@ -127,14 +132,14 @@ class Repository
             "\"PO-Revision-Date: {$timestamp}\\n\"\n",
             "\"Last-Translator: {$translator}\\n\"\n",
             "\"Language-Team: {$translator}\\n\"\n",
-            "\"Language: {$locale}\\n\"\n",
             "\"MIME-Version: 1.0\\n\"\n",
             "\"Content-Type: text/plain; charset={$encoding}\\n\"\n",
             "\"Content-Transfer-Encoding: 8bit\\n\"\n",
-            "\"X-Generator: Poedit {$version}\\n\"\n",
             "\"X-Poedit-Basepath: {$relPath}\\n\"\n",
             "\"X-Poedit-SourceCharset: {$encoding}\\n\"\n",
             $strKeywords,
+            $strPluralForms,
+            "\"Language: {$locale}\\n\"\n",
         );
 
         $paths = $this->stripPath($paths, $this->basePath);
@@ -159,8 +164,8 @@ class Repository
      * @param string $encoding
      * @param string $project
      * @param string $translator
-     * @param string $keywords
-     * @param string $version
+     * @param array  $keywords
+     * @param string $pluralForms
      * @param bool   $cached
      * @param string $timestamp
      */
@@ -174,7 +179,7 @@ class Repository
         $project,
         $translator,
         $keywords,
-        $version,
+        $pluralForms = null,
         $cached = false,
         $timestamp = null
     ) {
@@ -193,11 +198,14 @@ class Repository
             $project,
             $translator,
             $keywords,
-            $version,
+            $pluralForms,
             $timestamp
         );
 
-        return $this->files->put($this->domainPath($destinationPath, $locale)."/{$domain}.po", $contents);
+        return $this->files->put(
+            $this->domainPath($destinationPath, $locale)."/{$domain}.po", 
+            $contents
+        );
     }
 
     /**
@@ -211,8 +219,8 @@ class Repository
      * @param string $encoding
      * @param string $project
      * @param string $translator
-     * @param string $keywords
-     * @param string $version
+     * @param array  $keywords
+     * @param string $pluralForms
      * @param bool   $cached
      * @param string $timestamp
      */
@@ -226,7 +234,7 @@ class Repository
         $project,
         $translator,
         $keywords,
-        $version,
+        $pluralForms = null,
         $cached = false,
         $timestamp = null
     ) {
@@ -243,7 +251,7 @@ class Repository
                 $project,
                 $translator,
                 $keywords,
-                $version,
+                $pluralForms,
                 $cached,
                 $timestamp
             );
@@ -265,7 +273,7 @@ class Repository
             $project,
             $translator,
             $keywords,
-            $version,
+            $pluralForms,
             $timestamp
         );
 

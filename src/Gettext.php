@@ -48,9 +48,9 @@ class Gettext
             $locales       = $preLocales;
         }
 
+        @putenv("{$strCategory}={$primaryLocale}");
         @putenv("LANG={$primaryLocale}");
         @putenv("LANGUAGE={$primaryLocale}");
-        @putenv("{$strCategory}={$primaryLocale}");
 
         $locale = setlocale($category, $locales);
 
@@ -80,7 +80,7 @@ class Gettext
      */
     public function getText($message)
     {
-        return gettext($domain, $message);
+        return gettext($message);
     }
 
     /**
@@ -152,7 +152,7 @@ class Gettext
     {
         $translation = _get_reader($domain, $category);
 
-        return _encode($translation->npgettext($domain, $context, $msgid1, $msgid2, $n, $category));
+        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
     }
 
     /**
@@ -183,7 +183,7 @@ class Gettext
     {
         $translation = _get_reader($domain);
 
-        return _encode($translation->npgettext($domain, $context, $msgid1, $msgid2, $n));
+        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
     }
 
     /**

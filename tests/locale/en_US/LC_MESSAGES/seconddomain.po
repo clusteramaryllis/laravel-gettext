@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Translation Project\n"
-"POT-Creation-Date: 2015-01-27 15:01+0700\n"
-"PO-Revision-Date: 2015-01-27 15:04+0700\n"
+"POT-Creation-Date: 2015-01-31 03:38+0700\n"
+"PO-Revision-Date: 2015-01-31 03:41+0700\n"
 "Last-Translator: Translation Team\n"
 "Language-Team: Translation Team\n"
 "Language: en_US\n"
@@ -13,15 +13,48 @@ msgstr ""
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: _;gettext;dgettext:2;dcgettext:2;ngettext:1,2;"
-"dngettext:2,3;dcngettext:2,3;__dgettext;__dcgettext;__dngettext:1,2;"
-"__dcngettext:1,2\n"
+"dngettext:2,3;dcngettext:2,3;pgettext:1c,2;dpgettext:2c,3;"
+"npgettext:1c,2,3;dnpgettext:2c,3,4;dcnpgettext:2c,3,4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: views\n"
 "X-Poedit-SearchPath-1: storages/seconddomain\n"
 
-#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:1
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:3
 msgid "Welcome to first domain"
 msgstr "Welcome to first domain !"
 
-#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:2
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:4
 msgid "And second domain"
 msgstr "And second domain"
+
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:5
+msgctxt "yearn"
+msgid "miss"
+msgstr "miss"
+
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:6
+msgctxt "mishit"
+msgid "miss"
+msgstr "miss"
+
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:7
+msgctxt "device"
+msgid "mouse"
+msgid_plural "mouses"
+msgstr[0] "mouse"
+msgstr[1] "mouses"
+
+#: storages/seconddomain/bbe24f5e3fa75a51878d115e5d38172a.php:8
+msgctxt "animal"
+msgid "mouse"
+msgid_plural "mice"
+msgstr[0] "mouse"
+msgstr[1] "mice"
+
+#~ msgctxt "lose"
+#~ msgid "miss"
+#~ msgstr "miss"
+
+#~ msgctxt "hit"
+#~ msgid "miss"
+#~ msgstr "miss"

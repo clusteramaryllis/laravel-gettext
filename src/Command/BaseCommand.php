@@ -72,11 +72,45 @@ class BaseCommand extends Command
     /**
      * Get the locales.
      *
-     * @return array
+     * @return string
      */
-    protected function getLocales()
+    protected function getLanguages()
     {
-        return $this->getArrayOption('locales');
+        $locale     = $this->input->getOption('locale');
+        $encoding   = $this->input->getOption('encoding');
+        $pluralForms = $this->input->getOption('plural-forms');
+
+        if (is_null($locale) && is_null($encoding) && is_null($pluralForms)) {
+            return $this->config->getLanguages();
+        }
+
+        if (is_null($locale)) {
+            $flag        = 'en';
+            $localeValue = 'en_US';
+        } else {
+            $flag        = $locale;
+            $localeValue = $locale;
+        }
+
+        if (is_null($encoding)) {
+            $encodingValue = 'utf-8';
+        } else {
+            $encodingValue = $encoding;
+        }
+
+        if (is_null($pluralForms)) {
+            $pluralFormsValue = null;
+        } else {
+            $pluralFormsValue = $pluralForms;
+        }
+
+        $languages[$flag] = array(
+            'locale' => $localeValue,
+            'encoding' => $encodingValue,
+            'plural_forms' => $pluralFormsValue,
+        );
+
+        return $languages;
     }
 
     /**
@@ -117,16 +151,6 @@ class BaseCommand extends Command
     protected function getDomain()
     {
         return $this->getStringOption('domain');
-    }
-
-    /**
-     * Get the encoding language.
-     *
-     * @return string
-     */
-    protected function getEncoding()
-    {
-        return $this->getStringOption('encoding');
     }
 
     /**
@@ -235,17 +259,17 @@ class BaseCommand extends Command
     protected function getOptions()
     {
         return array(
-            array('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to scan.', null),
-            array('sources', null, InputOption::VALUE_OPTIONAL, 'The list of source directories to scan separate by , (relative to laravel base path). ', null),
-            array('destination', null, InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path).', null),
-            array('storage', null, InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path).', null),
-            array('locales', null, InputOption::VALUE_OPTIONAL, 'The list of locales separate by ,.', null),
-            array('keywords', null, InputOption::VALUE_OPTIONAL, 'The list of keywords separate by ,.', null),
-            array('domain', null, InputOption::VALUE_OPTIONAL, 'The output of po domain name.', null),
-            array('encoding', null, InputOption::VALUE_OPTIONAL, 'The encoding language.', null),
-            array('translator', null, InputOption::VALUE_OPTIONAL, 'The translator name.', null),
-            array('project', null, InputOption::VALUE_OPTIONAL, 'The project name.', null),
-            array('poedit-version', null, InputOption::VALUE_OPTIONAL, 'The poedit software version.', null),
+            array('bench', 'b', InputOption::VALUE_OPTIONAL, 'The name of the workbench to scan', null),
+            array('sources', 's', InputOption::VALUE_OPTIONAL, 'The list of source directories to scan separate by , (relative to laravel base path)', null),
+            array('destination', 'ds', InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path)', null),
+            array('storage', 'st', InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path)', null),
+            array('locale', 'l', InputOption::VALUE_OPTIONAL, 'The locale language', null),
+            array('keywords', 'k', InputOption::VALUE_OPTIONAL, 'The list of keywords separate by ,', null),
+            array('domain', 'd', InputOption::VALUE_OPTIONAL, 'The output of po domain name', null),
+            array('encoding', 'e', InputOption::VALUE_OPTIONAL, 'The encoding language', null),
+            array('translator', 't', InputOption::VALUE_OPTIONAL, 'The translator name', null),
+            array('project', 'p', InputOption::VALUE_OPTIONAL, 'The project name', null),
+            array('plural-forms', 'pl', InputOption::VALUE_OPTIONAL, 'The plural forms', null),
         );
     }
 }

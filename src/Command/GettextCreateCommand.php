@@ -25,7 +25,7 @@ class GettextCreateCommand extends BaseCommand
     {
         $cached = false;
 
-        foreach ($this->getLocales() as $locale) {
+        foreach ($this->getLanguages() as $language) {
             $domain          = $this->getDomain();
             $destinationPath = $this->getDestinationPath();
 
@@ -34,17 +34,20 @@ class GettextCreateCommand extends BaseCommand
                 $this->getStoragePath(),
                 $destinationPath,
                 $domain,
-                $locale,
-                $this->getEncoding(),
+                $language['locale'],
+                $language['encoding'],
                 $this->getProject(),
                 $this->getTranslator(),
                 $this->getKeywords(),
-                $this->getVersion(),
+                $language['plural_forms'],
                 $cached
             );
 
             $cached = true;
-            $info   = $this->repo->domainPath($destinationPath, $locale)."/{$domain}.po";
+            $info   = $this->repo->domainPath(
+                $destinationPath, 
+                $language['locale']
+            )."/{$domain}.po";
 
             $this->output->writeln('<info>Po file created on :</info> '.$info);
         }

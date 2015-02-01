@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Translation Project\n"
-"POT-Creation-Date: 2015-01-27 15:02+0700\n"
-"PO-Revision-Date: 2015-01-27 15:02+0700\n"
+"POT-Creation-Date: 2015-01-30 10:13+0700\n"
+"PO-Revision-Date: 2015-01-30 10:15+0700\n"
 "Last-Translator: Translation Team\n"
 "Language-Team: Translation Team\n"
 "Language: en_US\n"
@@ -15,9 +15,16 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;dgettext:2;dcgettext:2;ngettext:1,2;"
 "dngettext:2,3;dcngettext:2,3;__dgettext;__dcgettext;__dngettext:1,2;"
 "__dcngettext:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: views\n"
 "X-Poedit-SearchPath-1: storages/firstdomain\n"
 
-#: storages/firstdomain/6a68adf0741aa8f3bf1fab9fd2e1728a.php:1
+#: storages/firstdomain/6a68adf0741aa8f3bf1fab9fd2e1728a.php:3
 msgid "Welcome to first domain"
 msgstr "Welcome to first domain"
+
+#: storages/firstdomain/6a68adf0741aa8f3bf1fab9fd2e1728a.php:5
+msgid "pig"
+msgid_plural "pigs"
+msgstr[0] ""
+msgstr[1] ""

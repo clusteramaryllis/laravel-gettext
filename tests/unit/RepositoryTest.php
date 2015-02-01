@@ -62,11 +62,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             $this->config['storage_path'],
             $this->config['destination_path'],
             'en_US',
-            $this->config['encoding'],
+            'UTF-8',
             $this->config['project_name'],
             $this->config['translator'],
             $this->config['keywords'],
-            $this->config['poedit_version'],
+            "nplurals=2; plural=(n != 1);",
             $timestamp
         );
 
@@ -81,11 +81,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             $this->config['destination_path'],
             $this->config['domain'],
             'en_US',
-            $this->config['encoding'],
+            'UTF-8',
             $this->config['project_name'],
             $this->config['translator'],
             $this->config['keywords'],
-            $this->config['poedit_version']
+            "nplurals=2; plural=(n != 1);"
         );
 
         $this->assertFileExists(__DIR__.'/../locale/en_US/LC_MESSAGES/'.$this->config['domain'].'.po');
@@ -99,11 +99,11 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             $this->config['destination_path'],
             $this->config['domain'],
             'en_US',
-            $this->config['encoding'],
+            'UTF-8',
             $this->config['project_name'],
             $this->config['translator'],
             $this->config['keywords'],
-            $this->config['poedit_version']
+            "nplurals=2; plural=(n != 1);"
         );
 
         $filename = __DIR__.'/../locale/en_US/LC_MESSAGES/'.$this->config['domain'].'.po';

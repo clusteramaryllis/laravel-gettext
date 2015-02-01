@@ -9,6 +9,13 @@ if (! function_exists('pgettext')) {
     }
 }
 
+if (! function_exists('dpgettext')) {
+    function pgettext($domain, $context, $message)
+    {
+        return Gettext::dPGetText($domain, $context, $message);
+    }
+}
+
 if (! function_exists('npgettext')) {
     function npgettext($context, $msgid1, $msgid2, $n = 1)
     {
