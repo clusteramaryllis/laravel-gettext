@@ -156,8 +156,8 @@ if (! function_exists('dcnpgettext')) {
     }
 }
 
-if (! function_exists('__setlocale')) {
-    function __setlocale($category)
+if (! function_exists('set_locale_env')) {
+    function set_locale_env($category)
     {
         return forward_static_call_array(
             array('Clusteramaryllis\Gettext\Facade\Gettext', 'setLocale'),
