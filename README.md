@@ -14,9 +14,9 @@ Add the composer repository to your *composer.json* file:
 }
 ```
 
-For Laravel 4.2, checkout [0.2 branch](https://github.com/clusteramaryllis/laravel-gettext/tree/0.2)
+For Laravel 4.2, checkout [0.3 branch](https://github.com/clusteramaryllis/laravel-gettext/tree/0.3)
 
-And run `composer update`. Once finished, register via service provider in `app/config/app.php` in the `providers` array:
+And run `composer update`. Once finished, register via service provider in `config/app.php` in the `providers` array:
 
 ```php
 'providers' => [
@@ -28,7 +28,7 @@ And run `composer update`. Once finished, register via service provider in `app/
 ]
 ```
 
-Publish the configuration file (optional) (will create on `config/gettext.php`):
+Publish the configuration file (optional) (will create on `config/gettext.php`) :
 
 ```bash
 php artisan vendor:publish
