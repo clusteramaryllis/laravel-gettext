@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
      * List of valid generated locales.
@@ -10,13 +10,13 @@ return array(
      * - List of encoding : github.com/skooler/camellia/blob/master/converter.php#L66-L440
      * - List of plural forms : localization-guide.readthedocs.org/en/latest/l10n/pluralforms.html
      */
-    'languages' => array(
-        'en' => array(
+    'languages' => [
+        'en' => [
             'locale' => 'en_US',
             'encoding' => 'utf-8',
             'plural_forms' => "nplurals=2; plural=(n != 1);",
-        ),
-    ),
+        ],
+    ],
 
     /**
      * Default text domain.
@@ -36,10 +36,10 @@ return array(
     /**
      * Default path to be scanned.
      */
-    'source_paths' => array(
+    'source_paths' => [
         app_path('views'),
         app_path('controllers'),
-    ),
+    ],
 
     /**
      * Default path for generated .po files to be stored.
@@ -54,7 +54,7 @@ return array(
     /**
      * List of keywords to scan in file.
      */
-    'keywords' => array(
+    'keywords' => [
         '_',
         'gettext',
         'dgettext:2',
@@ -67,5 +67,5 @@ return array(
         'npgettext:1c,2,3',
         'dnpgettext:2c,3,4',
         'dcnpgettext:2c,3,4',
-    ),
-);
+    ],
+];
