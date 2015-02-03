@@ -5,7 +5,7 @@ return array(
     /*
      * List of valid generated locales.
      *
-     * See Reference(s): 
+     * See Reference(s):
      * - List of locales : github.com/netson/l4gettext/blob/master/src/config/locales.php#L19-L228
      * - List of encoding : github.com/skooler/camellia/blob/master/converter.php#L66-L440
      * - List of plural forms : localization-guide.readthedocs.org/en/latest/l10n/pluralforms.html
@@ -14,8 +14,8 @@ return array(
         'en' => array(
             'locale' => 'en_US',
             'encoding' => 'utf-8',
-            'plural_forms' => "nplurals=2; plural=(n != 1);"
-        )
+            'plural_forms' => "nplurals=2; plural=(n != 1);",
+        ),
     ),
 
     /**

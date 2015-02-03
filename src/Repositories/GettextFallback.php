@@ -1,0 +1,314 @@
+<?php namespace Clusteramaryllis\Gettext\Repositories;
+
+use FileReader;
+use gettext_reader;
+
+class GettextFallback
+{
+    protected $emulateGettext = false;
+
+    protected $textDomains = [];
+
+    protected $defaultDomain = 'messages';
+
+    protected $currentLocale = '';
+
+    protected $lcCategories = [
+        'LC_CTYPE',
+        'LC_NUMERIC',
+        'LC_TIME',
+        'LC_COLLATE',
+        'LC_MONETARY',
+        'LC_MESSAGES',
+        'LC_ALL',
+    ];
+
+    public function __construct()
+    {
+        defined('LC_MESSAGES') || define('LC_MESSAGES', 5);
+    }
+
+    public function getLocalesList($locale)
+    {
+        $localeNames = [];
+        $pattern = "/^(?P<lang>[a-z]{2,3})"
+           ."(?:_(?P<country>[A-Z]{2}))?"
+           ."(?:\.(?P<charset>[-A-Za-z0-9_]+))?"
+           ."(?:@(?P<modifier>[-A-Za-z0-9_]+))?$/";
+
+        if (is_string($locale)) {
+            if (preg_match($pattern, $locale, $matches)) {
+
+                if (isset($matches["lang"])) $lang = $matches["lang"];
+                if (isset($matches["country"])) $country = $matches["country"];
+                if (isset($matches["charset"])) $charset = $matches["charset"];
+                if (isset($matches["modifier"])) $modifier = $matches["modifier"];
+
+                if (array_key_exists("modifier", $matches)) {
+                    if (array_key_exists("country", $matches)) {
+                        if (array_key_exists("charset", $matches)) {
+                            $localeNames[] = "{$lang}_{$country}.{$charset}@{$modifier}";
+                        }
+
+                        $localeNames[] = "{$lang}_{$country}@{$modifier}";
+                    }
+
+                    if (array_key_exists("charset", $matches)) {
+                        $localeNames[] = "{$lang}.{$charset}@{$modifier}";
+                    }
+
+                    $localeNames[] = "{$lang}@{$modifier}";
+                }
+
+                if (array_key_exists("country", $matches)) {
+                    if (array_key_exists("charset", $matches)) {
+                        $localeNames[] = "{$lang}_{$country}.{$charset}";
+                    }
+
+                    $localeNames[] = "{$lang}_{$country}";
+                }
+
+                if (array_key_exists("charset", $matches)) {
+                    $localeNames[] = "{$lang}.{$charset}";
+                }
+
+                $localeNames[] = "{$lang}";
+            }
+
+            if (! in_array($locale, $localeNames)) {
+                $localeNames[] = $locale;
+            }
+        }
+
+        return $localeNames;
+    }
+
+    public function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
+    {
+        if (! is_string($domain) || $domain === '') {
+            $domain = $this->defaultDomain;
+        }
+
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
+        }
+
+        if (! array_key_exists('l10n', $this->textDomains[$domain])) {
+            $locale      = $this->setLocale(LC_MESSAGES, 0);
+            $boundPath   = array_key_exists('path', $this->textDomains[$domain]) ?
+                $this->textDomains[$domain]['path'] : './';
+            $subPath     = $this->lcCategories[$category]."/{$domain}.mo";
+            $localeNames = $this->getLocalesList($locale);
+            $input       = null;
+
+            foreach ($localeNames as $locale) {
+                $fullPath = $boundPath.$locale."/".$subPath;
+
+                if (file_exists($fullPath)) {
+                    $input = new FileReader($fullPath);
+
+                    break;
+                }
+            }
+
+            $this->textDomains[$domain]['l10n'] = new gettext_reader($input, $cache);
+        }
+
+        return $this->textDomains[$domain]['l10n'];
+    }
+
+    public function getEmulateGettext()
+    {
+        return $this->emulateGettext;
+    }
+
+    public function getCodeset($domain = null)
+    {
+        if (! is_string($domain) || $domain === '') {
+            $domain = $this->defaultDomain;
+        }
+
+        return array_key_exists('codeset', $this->textDomains[$domain]) ?
+            $this->textDomains[$domain]['codeset'] :
+            ini_get('mbstring.internal_encoding');
+    }
+
+    public function getDefaultLocale($locale)
+    {
+        if (! is_string($locale) || $locale === '') {
+            return getenv('LANG');
+        }
+
+        return $locale;
+    }
+
+    public function hasLocaleAndFunction($func = null)
+    {
+        if ($func && function_exists($func)) {
+            return false;
+        }
+
+        return ! $this->emulateGettext;
+    }
+
+    public function setLocale($category, $locale)
+    {
+        if ($locale === 0) {
+            if ($this->currentLocale === '') {
+                return $this->setLocale($category, $this->currentLocale);
+            }
+
+            return $this->currentLocale;
+        }
+
+        if (function_exists('setlocale')) {
+            $result = setlocale($category, $locale);
+
+            if (($locale === '' && ! $result) ||
+                ($locale !== '' && $result !== $locale)) {
+                $this->currentLocale = $this->getDefaultLocale($locale);
+                $this->emulateGettext = true;
+            } else {
+                $this->currentLocale = $result;
+                $this->emulateGettext = false;
+            }
+        } else {
+            $this->currentLocale = $this->getDefaultLocale($locale);
+            $this->emulateGettext = true;
+        }
+
+        if (array_key_exists($this->defaultDomain, $this->textDomains)) {
+            unset($this->textDomains[$this->defaultDomain]['l10n']);
+        }
+
+        return $this->currentLocale;
+    }
+
+    public function encode($text)
+    {
+        $targetEncoding = $this->getCodeset();
+
+        if (function_exists('mb_detect_encoding')) {
+            $sourceEncoding = mb_detect_encoding($text);
+
+            if ($sourceEncoding !== $targetEncoding) {
+                $text = mb_convert_encoding($text, $targetEncoding, $sourceEncoding);
+            }
+        }
+
+        return $text;
+    }
+
+    public function bindTextDomain($domain, $path)
+    {
+        $path = rtrim($path, "/\\")."/";
+
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
+        }
+
+        return $this->textDomains[$domain]['path'] = $path;
+    }
+
+    public function bindTextDomainCodeset($domain, $codeset)
+    {
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
+        }
+
+        return $this->textDomains[$domain]['codeset'] = $codeset;
+    }
+
+    public function textDomain($domain = null)
+    {
+        if (is_string($domain)) {
+            return $this->defaultDomain = $domain;
+        }
+
+        return $this->defaultDomain;
+    }
+
+    public function getText($msgid)
+    {
+        $l10n = $this->getReader();
+
+        return $this->encode($l10n->translate($msgid));
+    }
+
+    public function nGetText($msgid1, $msgid2, $n)
+    {
+        $l10n = $this->getReader();
+
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+    }
+
+    public function dGetText($domain, $msgid)
+    {
+        $l10n = $this->getReader($domain);
+
+        return $this->encode($l10n->translate($msgid));
+    }
+
+    public function dNGetText($domain, $msgid1, $msgid2, $n)
+    {
+        $l10n = $this->getReader($domain);
+
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+    }
+
+    public function dCGetText($domain, $msgid, $category)
+    {
+        $l10n = $this->getReader($domain, $category);
+
+        return $this->encode($l10n->translate($msgid));
+    }
+
+    public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
+    {
+        $l10n = $this->getReader($domain, $category);
+
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+    }
+
+    public function pGetText($context, $msgid)
+    {
+        $l10n = $this->getReader();
+
+        return $this->encode($l10n->pgettext($context, $msgid));
+    }
+
+    public function dPGetText($domain, $context, $msgid)
+    {
+        $l10n = $this->getReader($domain);
+
+        return $this->encode($l10n->pgettext($context, $msgid));
+    }
+
+    public function dCPGetText($domain, $context, $msgid, $category)
+    {
+        $l10n = $this->getReader($domain, $category);
+
+        return $this->encode($l10n->pgettext($context, $msgid));
+    }
+
+    public function nPGetText($context, $msgid1, $msgid2, $n)
+    {
+        $l10n = $this->getReader();
+
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+    }
+
+    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
+    {
+        $l10n = $this->getReader($domain);
+
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+    }
+
+    public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
+    {
+        $l10n = $this->getReader($domain, $category);
+
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+    }
+}

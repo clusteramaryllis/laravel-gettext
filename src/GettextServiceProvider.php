@@ -40,7 +40,7 @@ class GettextServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerGettext();
-        $this->registerRepository();
+        $this->registerGenerator();
     }
 
     /**
@@ -52,7 +52,7 @@ class GettextServiceProvider extends ServiceProvider
     {
         return array(
             'gettext',
-            'gettext.repository',
+            'gettext.generator',
             'gettext.config',
             'gettext.create',
             'gettext.update',
@@ -60,7 +60,7 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register repository.
+     * Register gettext.
      *
      * @return void
      */
@@ -76,22 +76,22 @@ class GettextServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerRepository()
+    protected function registerGenerator()
     {
-        $this->app['gettext.repository'] = $this->app->share(function ($app) {
-            return new Repository($app['files'], $app['path.base']);
+        $this->app['gettext.generator'] = $this->app->share(function ($app) {
+            return new Repositories\PoGenerator($app['files'], $app['path.base']);
         });
     }
 
     /**
-     * Register repository.
+     * Boot config.
      *
      * @return void
      */
     protected function bootConfig()
     {
         $this->app['gettext.config'] = $this->app->share(function ($app) {
-            $config = new Manager();
+            $config = new Repositories\Manager();
 
             return $config->setPackagePath($app['path.base']."/vendor");
         });

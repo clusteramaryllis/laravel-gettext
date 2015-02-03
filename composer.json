@@ -23,9 +23,6 @@
                     "classmap": [
                         "gettext.php",
                         "streams.php"
-                    ],
-                    "files": [
-                        "gettext.inc"
                     ]
                 }
             }

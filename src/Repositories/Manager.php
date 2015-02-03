@@ -1,4 +1,4 @@
-<?php namespace Clusteramaryllis\Gettext;
+<?php namespace Clusteramaryllis\Gettext\Repositories;
 
 use Illuminate\Support\Facades\Config;
 
@@ -57,7 +57,7 @@ class Manager
     protected function getConfig($name, $default = null)
     {
         if (array_key_exists($name, $this->config)) {
-          return $this->config[$name];
+            return $this->config[$name];
         }
 
         return $default;
@@ -274,16 +274,5 @@ class Manager
     public function getProject($default = null)
     {
         return $this->getConfig("project_name", $default);
-    }
-
-    /**
-     * Get the default encoding.
-     *
-     * @param  mixed  $default
-     * @return string
-     */
-    public function getEncoding($default = null)
-    {
-        return $this->getConfig("encoding", $default);
     }
 }

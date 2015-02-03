@@ -45,7 +45,7 @@ class GettextUpdateCommand extends BaseCommand
 
             $cached = true;
             $info   = $this->repo->domainPath(
-                $destinationPath, 
+                $destinationPath,
                 $language['locale']
             )."/{$domain}.po";
 

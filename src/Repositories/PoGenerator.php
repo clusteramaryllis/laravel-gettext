@@ -1,11 +1,11 @@
-<?php namespace Clusteramaryllis\Gettext;
+<?php namespace Clusteramaryllis\Gettext\Repositories;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler as Compiler;
 use Clusteramaryllis\Gettext\Exception\ResourceNotFoundException;
 
-class Repository
+class PoGenerator
 {
     /**
      * Filesystem instance.
@@ -116,7 +116,7 @@ class Repository
         }
 
         // Plural form
-        $strPluralForms = is_string($pluralForms) ? 
+        $strPluralForms = is_string($pluralForms) ?
             "\"Plural-Forms: {$pluralForms}\\n\"\n" :
             "";
 
@@ -124,7 +124,7 @@ class Repository
 
         $relPath = $this->relativePath($domainPath, $this->basePath);
 
-        $templates = array(
+        $templates = [
             "msgid \"\"\n",
             "msgstr \"\"\n",
             "\"Project-Id-Version: {$project}\\n\"\n",
@@ -140,7 +140,7 @@ class Repository
             $strKeywords,
             $strPluralForms,
             "\"Language: {$locale}\\n\"\n",
-        );
+        ];
 
         $paths = $this->stripPath($paths, $this->basePath);
 
@@ -203,7 +203,7 @@ class Repository
         );
 
         return $this->files->put(
-            $this->domainPath($destinationPath, $locale)."/{$domain}.po", 
+            $this->domainPath($destinationPath, $locale)."/{$domain}.po",
             $contents
         );
     }

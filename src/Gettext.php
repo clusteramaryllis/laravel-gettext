@@ -5,17 +5,26 @@ use InvalidArgumentException;
 class Gettext
 {
     /**
-     * bindtextdomain (with optional codeset).
+     * bindtextdomain
      *
      * @param  string $domain
      * @param  string $directory
+     * @return string
+     */
+    public function bindTextDomain($domain, $directory)
+    {
+        return bindtextdomain($domain, $directory);
+    }
+
+    /**
+     * bind_text_domain_codeset
+     *
+     * @param  string $domain
      * @param  string $codeset
      * @return string
      */
-    public function bindTextDomain($domain, $directory, $codeset = 'UTF-8')
+    public function bindTextDomainCodeset($domain, $codeset)
     {
-        bindtextdomain($domain, $directory);
-
         return bind_textdomain_codeset($domain, $codeset);
     }
 
@@ -53,7 +62,7 @@ class Gettext
         @putenv("LANGUAGE={$primaryLocale}");
 
         foreach ($locales as $locale) {
-            _setlocale($category, $locale);
+            T_setlocale($category, $locale);
         }
 
         return $primaryLocale;
@@ -82,6 +91,20 @@ class Gettext
     }
 
     /**
+     * ngettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function nGetText($msgid1, $msgid2, $n = 1)
+    {
+        return ngettext($msgid1, $msgid2, $n);
+    }
+
+    /**
      * dgettext wrapper.
      *
      * @param  string $domain
@@ -91,6 +114,20 @@ class Gettext
     public function dGetText($domain, $message)
     {
         return dgettext($domain, $message);
+    }
+
+    /**
+     * dngettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function dNGetText($domain, $msgid1, $msgid2, $n = 1)
+    {
+        return dngettext($domain, $msgid1, $msgid2, $n);
     }
 
     /**
@@ -122,6 +159,31 @@ class Gettext
     }
 
     /**
+     * pgettext wrapper.
+     *
+     * @param  string $context
+     * @param  string $message
+     * @return string
+     */
+    public function pGetText($context, $message)
+    {
+        return pgettext($context, $message);
+    }
+
+    /**
+     * dpgettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $message
+     * @return string
+     */
+    public function dPGetText($domain, $context, $message)
+    {
+        return dpgettext($domain, $context, $message);
+    }
+
+    /**
      * dcpgettext wrapper.
      *
      * @param  string $domain
@@ -132,7 +194,36 @@ class Gettext
      */
     public function dCPGetText($domain, $context, $message, $category = LC_ALL)
     {
-        return _dcpgettext($domain, $context, $message, $category);
+        return dcpgettext($domain, $context, $message, $category);
+    }
+
+    /**
+     * npgettext wrapper.
+     *
+     * @param  string $context
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function nPGetText($context, $msgid1, $msgid2, $n = 1)
+    {
+        return npgettext($context, $msgid1, $msgid2, $n);
+    }
+
+    /**
+     * dnpgettext wrapper.
+     *
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid1
+     * @param  string $msgid2
+     * @param  int    $n
+     * @return string
+     */
+    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n = 1)
+    {
+        return dnpgettext($domain, $context, $msgid1, $msgid2, $n);
     }
 
     /**
@@ -148,95 +239,7 @@ class Gettext
      */
     public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n = 1, $category = LC_ALL)
     {
-        $translation = _get_reader($domain, $category);
-
-        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
-    }
-
-    /**
-     * dngettext wrapper.
-     *
-     * @param  string $domain
-     * @param  string $msgid1
-     * @param  string $msgid2
-     * @param  int    $n
-     * @return string
-     */
-    public function dNGetText($domain, $msgid1, $msgid2, $n = 1)
-    {
-        return dngettext($domain, $msgid1, $msgid2, $n);
-    }
-
-    /**
-     * dnpgettext wrapper.
-     *
-     * @param  string $domain
-     * @param  string $context
-     * @param  string $msgid1
-     * @param  string $msgid2
-     * @param  int    $n
-     * @return string
-     */
-    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n = 1)
-    {
-        $translation = _get_reader($domain);
-
-        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
-    }
-
-    /**
-     * dpgettext wrapper.
-     *
-     * @param  string $domain
-     * @param  string $context
-     * @param  string $message
-     * @return string
-     */
-    public function dPGetText($domain, $context, $message)
-    {
-        return _dpgettext($domain, $context, $message);
-    }
-
-    /**
-     * dngettext wrapper.
-     *
-     * @param  string $domain
-     * @param  string $msgid1
-     * @param  string $msgid2
-     * @param  int    $n
-     * @return string
-     */
-    public function nGetText($msgid1, $msgid2, $n = 1)
-    {
-        return ngettext($msgid1, $msgid2, $n);
-    }
-
-    /**
-     * npgettext wrapper.
-     *
-     * @param  string $context
-     * @param  string $msgid1
-     * @param  string $msgid2
-     * @param  int    $n
-     * @return string
-     */
-    public function nPGetText($context, $msgid1, $msgid2, $n = 1)
-    {
-        $translation = _get_reader();
-
-        return _encode($translation->npgettext($context, $msgid1, $msgid2, $n));
-    }
-
-    /**
-     * pgettext wrapper.
-     * 
-     * @param  string $context
-     * @param  string $message
-     * @return string          
-     */
-    public function pGetText($context, $message)
-    {
-        return _pgettext($context, $message);
+        return dcnpgettext($domain, $context, $msgid1, $msgid2, $n, $category);
     }
 
     /**

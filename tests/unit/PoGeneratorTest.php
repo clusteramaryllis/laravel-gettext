@@ -2,29 +2,29 @@
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
-use Clusteramaryllis\Gettext\Repository;
+use Clusteramaryllis\Gettext\Repositories\PoGenerator;
 
-class RepositoryTest extends PHPUnit_Framework_TestCase
+class PoGeneratorTest extends PHPUnit_Framework_TestCase
 {
     protected $config;
 
     protected $files;
 
-    protected $repository;
+    protected $generator;
 
     public function setUp()
     {
         include __DIR__.'/../config/config.php';
 
-        $this->config     = $config;
-        $this->files      = new Filesystem();
-        $this->repository = new Repository($this->files, $this->config['base_path']);
+        $this->config    = $config;
+        $this->files     = new Filesystem();
+        $this->generator = new PoGenerator($this->files, $this->config['base_path']);
     }
 
     public function testStripPath()
     {
-        $path  = $this->repository->stripPath(__DIR__, __DIR__.'/..');
-        $paths = $this->repository->stripPath(array(__DIR__, __DIR__.'/../config'), __DIR__.'/..');
+        $path  = $this->generator->stripPath(__DIR__, __DIR__.'/..');
+        $paths = $this->generator->stripPath(array(__DIR__, __DIR__.'/../config'), __DIR__.'/..');
 
         $this->assertEquals('unit', $path);
         $this->assertEquals(array('unit', 'config'), $paths);
@@ -34,7 +34,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
     {
         $compiler = new BladeCompiler(new Filesystem(), $this->config['storage_path']);
 
-        $this->repository->compileBladeViews($this->config['paths'], $this->config['storage_path']);
+        $this->generator->compileBladeViews($this->config['paths'], $this->config['storage_path']);
 
         foreach ($this->config['paths'] as $path) {
             $files = glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
@@ -57,7 +57,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
             "Y-m-d H:iO"
         );
 
-        $content = $this->repository->preparePoContent(
+        $content = $this->generator->preparePoContent(
             $this->config['paths'],
             $this->config['storage_path'],
             $this->config['destination_path'],
@@ -75,7 +75,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testAddLocale()
     {
-        $content = $this->repository->addLocale(
+        $content = $this->generator->addLocale(
             $this->config['paths'],
             $this->config['storage_path'],
             $this->config['destination_path'],
@@ -93,7 +93,7 @@ class RepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testUpdateLocale()
     {
-        $content = $this->repository->updateLocale(
+        $content = $this->generator->updateLocale(
             $this->config['paths'],
             $this->config['storage_path'],
             $this->config['destination_path'],
