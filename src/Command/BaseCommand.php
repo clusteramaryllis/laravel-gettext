@@ -45,7 +45,7 @@ class BaseCommand extends Command
         $path = $this->input->getOption('sources');
 
         if (! is_null($path)) {
-            $paths = explode(", ", $path);
+            $paths = explode(",", preg_replace('/\s+/', '', $path));
 
             foreach ($paths as  $path) {
                 $source[] = $this->laravel['path.base']."/{$path}";
@@ -217,7 +217,7 @@ class BaseCommand extends Command
         $option = $this->input->getOption($name);
 
         if (! is_null($option)) {
-            return explode(", ", $option);
+            return explode(",", preg_replace('/\s+/', '', $option));
         }
 
         $method = "get".(ucfirst($name));
