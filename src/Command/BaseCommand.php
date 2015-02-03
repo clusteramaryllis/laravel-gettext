@@ -270,6 +270,6 @@ class BaseCommand extends Command
             ['translator', 't', InputOption::VALUE_OPTIONAL, 'The translator name', null],
             ['project', 'p', InputOption::VALUE_OPTIONAL, 'The project name', null],
             ['plural-forms', 'pf', InputOption::VALUE_OPTIONAL, 'The plural forms', null],
-        );
+        ];
     }
 }
