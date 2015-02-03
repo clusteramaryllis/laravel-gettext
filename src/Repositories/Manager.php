@@ -7,7 +7,7 @@ class Manager
     /**
      * Default package config.
      */
-    const PACKAGE_DEFAULT_CONFIG = 'clusteramaryllis/gettext::config';
+    const PACKAGE_DEFAULT_CONFIG = 'gettext';
 
     /**
      * The configuration array.

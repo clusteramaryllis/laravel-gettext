@@ -5,11 +5,6 @@ use Illuminate\Support\ServiceProvider;
 class GettextServiceProvider extends ServiceProvider
 {
     /**
-     * Default namespace
-     */
-    const DEFAULT_NAMESPACE = 'clusteramaryllis/gettext';
-
-    /**
      * Indicates if loading of the provider is deferred.
      *
      * @var bool
@@ -23,7 +18,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package(static::DEFAULT_NAMESPACE, static::DEFAULT_NAMESPACE, __DIR__);
+        $this->setupConfig();
 
         require_once __DIR__."/helpers.php";
 
@@ -50,13 +45,27 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array(
+        return [
             'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
             'gettext.update',
-        );
+        ];
+    }
+
+    /**
+     * Setup config.
+     * 
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $source = realpath(__DIR__.'/../config/gettext.php');
+
+        $this->publishes([$source => config_path('gettext.php')]);
+
+        $this->mergeConfigFrom($source, 'gettext');
     }
 
     /**
