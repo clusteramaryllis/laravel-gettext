@@ -37,16 +37,16 @@ php artisan config:publish clusteramaryllis/gettext
 
 ### Command
 
-#### Available commands
+**Available commands**
 
 `gettext:create` => Generate new .po file
 `gettext:update` => Update existing .po file
 
-#### Available options
+**Available options**
 
 Check with `php artisan gettext:create --help` or `php artisan gettext:update --help`
 
-#### Example
+**Example**
 
 ```bash
 php artisan gettext:create --sources="app/controllers, app/views" --destination="app/locale" --locale="en_US" 
@@ -57,4 +57,5 @@ This will generate .po files in 'app/locale/en_US/LC_MESSAGES/messages.po' & wil
 Once done, you can easily translate your application using tools such as PoEdit.
 
 ### Acknowledgements
+
 This package is inspired by [laravel-gettext](https://github.com/xinax/laravel-gettext/) by Nicolás Daniel Palumbo for .po files creation & utilize [php-gettext](https:://launchpad.net/php-gettext/) package by Danilo Segan.
