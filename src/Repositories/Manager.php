@@ -14,7 +14,7 @@ class Manager
      *
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
 
     /**
      * Default package path.
@@ -29,7 +29,7 @@ class Manager
      * @param array  $config
      * @param string $namespace
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         $this->setConfigs($config ?: Config::get(static::PACKAGE_DEFAULT_CONFIG));
     }
@@ -194,7 +194,7 @@ class Manager
      * @param  array $default
      * @return array
      */
-    public function getSourcePaths($default = array())
+    public function getSourcePaths(array $default = [])
     {
         return $this->getConfig("source_paths", $default);
     }
@@ -238,7 +238,7 @@ class Manager
      * @param  array $default
      * @return array
      */
-    public function getLanguages($default = array())
+    public function getLanguages(array $default = [])
     {
         return $this->getConfig("languages", $default);
     }
@@ -249,7 +249,7 @@ class Manager
      * @param  array $default
      * @return array
      */
-    public function getKeywords($default = array())
+    public function getKeywords(array $default = [])
     {
         return $this->getConfig("keywords", $default);
     }
