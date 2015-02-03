@@ -29,7 +29,7 @@ class GettextUpdateCommand extends BaseCommand
             $domain          = $this->getDomain();
             $destinationPath = $this->getDestinationPath();
 
-            $this->repo->updateLocale(
+            $this->generator->updateLocale(
                 $this->getPaths(),
                 $this->getStoragePath(),
                 $destinationPath,
@@ -44,7 +44,7 @@ class GettextUpdateCommand extends BaseCommand
             );
 
             $cached = true;
-            $info   = $this->repo->domainPath(
+            $info   = $this->generator->domainPath(
                 $destinationPath,
                 $language['locale']
             )."/{$domain}.po";

@@ -3,22 +3,22 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Clusteramaryllis\Gettext\Repository;
-use Clusteramaryllis\Gettext\Manager;
+use Clusteramaryllis\Gettext\Repositories\PoGenerator;
+use Clusteramaryllis\Gettext\Config\Repositories\Manager;
 
 class BaseCommand extends Command
 {
     /**
      * Repository instance.
      *
-     * @var \Clusteramaryllis\Gettext\Repository
+     * @var \Clusteramaryllis\Gettext\Repositories\PoGenerator
      */
-    protected $repo;
+    protected $generator;
 
     /**
      * Manager instance.
      *
-     * @var \Clusteramaryllis\Gettext\Config\Manager
+     * @var \Clusteramaryllis\Gettext\Config\Repositories\Manager
      */
     protected $config;
 
@@ -27,12 +27,12 @@ class BaseCommand extends Command
      *
      * @return void
      */
-    public function __construct(Repository $repo, Manager $config)
+    public function __construct(Repository $generator, Manager $config)
     {
         parent::__construct();
 
-        $this->repo   = $repo;
-        $this->config = $config;
+        $this->generator = $generator;
+        $this->config    = $config;
     }
 
     /**
@@ -248,9 +248,9 @@ class BaseCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('package', InputArgument::OPTIONAL, 'The name of the package to scan.'),
-        );
+        return [
+            ['package', InputArgument::OPTIONAL, 'The name of the package to scan.'],
+        ];
     }
 
     /**
@@ -258,18 +258,18 @@ class BaseCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('bench', 'b', InputOption::VALUE_OPTIONAL, 'The name of the workbench to scan', null),
-            array('sources', 's', InputOption::VALUE_OPTIONAL, 'The list of source directories to scan separate by , (relative to laravel base path)', null),
-            array('destination', 'ds', InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path)', null),
-            array('storage', 'st', InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path)', null),
-            array('locale', 'l', InputOption::VALUE_OPTIONAL, 'The locale language', null),
-            array('keywords', 'k', InputOption::VALUE_OPTIONAL, 'The list of keywords separate by ,', null),
-            array('domain', 'd', InputOption::VALUE_OPTIONAL, 'The output of po domain name', null),
-            array('encoding', 'e', InputOption::VALUE_OPTIONAL, 'The encoding language', null),
-            array('translator', 't', InputOption::VALUE_OPTIONAL, 'The translator name', null),
-            array('project', 'p', InputOption::VALUE_OPTIONAL, 'The project name', null),
-            array('plural-forms', 'pl', InputOption::VALUE_OPTIONAL, 'The plural forms', null),
+        return [
+            ['bench', 'b', InputOption::VALUE_OPTIONAL, 'The name of the workbench to scan', null],
+            ['sources', 's', InputOption::VALUE_OPTIONAL, 'The list of source directories to scan separate by , (relative to laravel base path)', null],
+            ['destination', 'dt', InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path)', null],
+            ['storage', 'st', InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path)', null],
+            ['locale', 'l', InputOption::VALUE_OPTIONAL, 'The locale language', null],
+            ['keywords', 'k', InputOption::VALUE_OPTIONAL, 'The list of keywords separate by ,', null],
+            ['domain', 'd', InputOption::VALUE_OPTIONAL, 'The output of po domain name', null],
+            ['encoding', 'e', InputOption::VALUE_OPTIONAL, 'The encoding language', null],
+            ['translator', 't', InputOption::VALUE_OPTIONAL, 'The translator name', null],
+            ['project', 'p', InputOption::VALUE_OPTIONAL, 'The project name', null],
+            ['plural-forms', 'pf', InputOption::VALUE_OPTIONAL, 'The plural forms', null],
         );
     }
 }

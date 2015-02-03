@@ -29,7 +29,7 @@ class GettextCreateCommand extends BaseCommand
             $domain          = $this->getDomain();
             $destinationPath = $this->getDestinationPath();
 
-            $this->repo->addLocale(
+            $this->generator->addLocale(
                 $this->getPaths(),
                 $this->getStoragePath(),
                 $destinationPath,
@@ -44,7 +44,7 @@ class GettextCreateCommand extends BaseCommand
             );
 
             $cached = true;
-            $info   = $this->repo->domainPath(
+            $info   = $this->generator->domainPath(
                 $destinationPath,
                 $language['locale']
             )."/{$domain}.po";
