@@ -40,6 +40,7 @@ php artisan config:publish clusteramaryllis/gettext
 **Available commands**
 
 `gettext:create` => Generate new .po file
+
 `gettext:update` => Update existing .po file
 
 **Available options**
