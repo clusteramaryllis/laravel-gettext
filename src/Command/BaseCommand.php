@@ -264,7 +264,7 @@ class BaseCommand extends Command
             ['destination', 'dt', InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path)', null],
             ['storage', 'st', InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path)', null],
             ['locale', 'l', InputOption::VALUE_OPTIONAL, 'The locale language', null],
-            ['keywords', 'k', InputOption::VALUE_OPTIONAL, 'The list of keywords separate by ,', null],
+            ['keywords', 'k', InputOption::VALUE_OPTIONAL, 'The list of keywords separate by , ', null],
             ['domain', 'd', InputOption::VALUE_OPTIONAL, 'The output of po domain name', null],
             ['encoding', 'e', InputOption::VALUE_OPTIONAL, 'The encoding language', null],
             ['translator', 't', InputOption::VALUE_OPTIONAL, 'The translator name', null],
