@@ -4,15 +4,17 @@
 
 ### Installation
 
-Laravel 4.2 Installation
+Laravel 5.0 Installation
 
 Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "0.3.x"
+    "clusteramaryllis/gettext": "1.0.x"
 }
 ```
+
+For Laravel 4.2, checkout [0.2 branch](https://github.com/clusteramaryllis/laravel-gettext/tree/0.2)
 
 And run `composer update`. Once finished, register via service provider in `app/config/app.php` in the `providers` array:
 
@@ -26,10 +28,10 @@ And run `composer update`. Once finished, register via service provider in `app/
 ]
 ```
 
-Publish the configuration file (optional):
+Publish the configuration file (optional) (will create on `config/gettext.php`):
 
 ```bash
-php artisan config:publish clusteramaryllis/gettext
+php artisan vendor:publish
 ```
 
 ### Command

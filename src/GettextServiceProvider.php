@@ -45,11 +45,26 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
+            'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
             'gettext.update',
         ];
+    }
+
+    /**
+     * Setup config.
+     * 
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $source = realpath(__DIR__.'/../config/gettext.php');
+
+        $this->publishes([$source => config_path('gettext.php')]);
+
+        $this->mergeConfigFrom($source, 'gettext');
     }
 
     /**
