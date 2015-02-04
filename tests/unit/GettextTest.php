@@ -1,7 +1,5 @@
 <?php
 
-use Clusteramaryllis\Gettext\Gettext;
-
 class GettextTest extends PHPUnit_Framework_TestCase
 {
     protected $gettext;
