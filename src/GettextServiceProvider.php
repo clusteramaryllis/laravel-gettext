@@ -45,7 +45,6 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
