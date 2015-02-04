@@ -37,19 +37,19 @@ return [
      * Default path to be scanned.
      */
     'source_paths' => [
-        app_path('views'),
-        app_path('controllers'),
+        base_path('resources/views'),
+        app_path('Http/Controllers'),
     ],
 
     /**
      * Default path for generated .po files to be stored.
      */
-    'destination_path' => app_path('locale'),
+    'destination_path' => base_path('resources/locale'),
 
     /**
      * Default path for compiled .blade.php files to be temporary stored.
      */
-    'storage_path' => storage_path('views'),
+    'storage_path' => storage_path('framework/views'),
 
     /**
      * List of keywords to scan in file.
