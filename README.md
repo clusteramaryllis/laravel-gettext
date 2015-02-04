@@ -1,6 +1,6 @@
 # laravel-gettext
 
-[![Build Status](https://travis-ci.org/clusteramaryllis/laravel-gettext.svg?branch=0.2)](https://travis-ci.org/clusteramaryllis/laravel-gettext)
+[![Build Status](https://travis-ci.org/clusteramaryllis/laravel-gettext.svg?branch=0.3)](https://travis-ci.org/clusteramaryllis/laravel-gettext)
 
 ### Installation
 
@@ -10,7 +10,7 @@ Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "0.2.x"
+    "clusteramaryllis/gettext": "0.3.x"
 }
 ```
 
@@ -18,14 +18,7 @@ And run `composer update`. Once finished, register via service provider in `app/
 
 ```php
 'providers' => array(
-  'Clusteramaryllis\Gettext\GettextServiceProvider',
-)
-```
-
-You can also register `facade` in `aliases` key:
-```php
-'aliases' => array(
-  'Gettext' => 'Clusteramaryllis\Gettext\Facade\Gettext',
+    'Clusteramaryllis\Gettext\GettextServiceProvider',
 )
 ```
 

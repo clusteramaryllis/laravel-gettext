@@ -2,8 +2,9 @@
 
 use FileReader;
 use gettext_reader;
+use InvalidArgumentException;
 
-class GettextFallback
+class Gettext
 {
     protected $emulateGettext = false;
 
@@ -38,41 +39,35 @@ class GettextFallback
 
         if (is_string($locale)) {
             if (preg_match($pattern, $locale, $matches)) {
-
-                if (isset($matches["lang"])) $lang = $matches["lang"];
-                if (isset($matches["country"])) $country = $matches["country"];
-                if (isset($matches["charset"])) $charset = $matches["charset"];
-                if (isset($matches["modifier"])) $modifier = $matches["modifier"];
-
                 if (array_key_exists("modifier", $matches)) {
                     if (array_key_exists("country", $matches)) {
                         if (array_key_exists("charset", $matches)) {
-                            $localeNames[] = "{$lang}_{$country}.{$charset}@{$modifier}";
+                            $localeNames[] = $matches["lang"]."_".$matches["country"].".".$matches["charset"]."@".$matches["modifier"];
                         }
 
-                        $localeNames[] = "{$lang}_{$country}@{$modifier}";
+                        $localeNames[] = $matches["lang"]."_".$matches["country"]."@".$matches["modifier"];
                     }
 
                     if (array_key_exists("charset", $matches)) {
-                        $localeNames[] = "{$lang}.{$charset}@{$modifier}";
+                        $localeNames[] = $matches["lang"].".".$matches["charset"]."@".$matches["modifier"];
                     }
 
-                    $localeNames[] = "{$lang}@{$modifier}";
+                    $localeNames[] = $matches["lang"]."@".$matches["modifier"];
                 }
 
                 if (array_key_exists("country", $matches)) {
                     if (array_key_exists("charset", $matches)) {
-                        $localeNames[] = "{$lang}_{$country}.{$charset}";
+                        $localeNames[] = $matches["lang"]."_".$matches["country"].".".$matches["charset"];
                     }
 
-                    $localeNames[] = "{$lang}_{$country}";
+                    $localeNames[] = $matches["lang"]."_".$matches["country"];
                 }
 
                 if (array_key_exists("charset", $matches)) {
-                    $localeNames[] = "{$lang}.{$charset}";
+                    $localeNames[] = $matches["lang"].".".$matches["charset"];
                 }
 
-                $localeNames[] = "{$lang}";
+                $localeNames[] = $matches["lang"];
             }
 
             if (! in_array($locale, $localeNames)) {
@@ -133,10 +128,20 @@ class GettextFallback
             ini_get('mbstring.internal_encoding');
     }
 
-    public function getDefaultLocale($locale)
+    public function getDefaultLocale($locale, $category = "LC_ALL")
     {
         if (! is_string($locale) || $locale === '') {
-            return getenv('LANG');
+            if (getenv('LANG')) {
+                return getenv('LANG');
+            }
+
+            if (getenv('LANGUAGE')) {
+                return getenv('LANGUAGE');
+            }
+
+            if (getenv($category)) {
+                return getenv($category);
+            }
         }
 
         return $locale;
@@ -151,9 +156,22 @@ class GettextFallback
         return ! $this->emulateGettext;
     }
 
-    public function setLocale($category, $locale)
+    public function setLocale($category)
     {
-        if ($locale === 0) {
+        $argsCount = func_num_args();
+
+        if ($argsCount < 2) {
+            throw new InvalidArgumentException(
+                __CLASS__."::setLocale() expects at least 2 parameters, {$argsCount} given"
+            );
+        }
+
+        $strCategory = $this->checkCategory($category);
+        $preLocales  = func_get_args();
+
+        array_shift($preLocales);
+
+        if (! is_array($preLocales[0]) && $preLocales[0] === 0) {
             if ($this->currentLocale === '') {
                 return $this->setLocale($category, $this->currentLocale);
             }
@@ -161,20 +179,24 @@ class GettextFallback
             return $this->currentLocale;
         }
 
-        if (function_exists('setlocale')) {
-            $result = setlocale($category, $locale);
-
-            if (($locale === '' && ! $result) ||
-                ($locale !== '' && $result !== $locale)) {
-                $this->currentLocale = $this->getDefaultLocale($locale);
-                $this->emulateGettext = true;
-            } else {
-                $this->currentLocale = $result;
-                $this->emulateGettext = false;
-            }
+        if (is_array($preLocales[0])) {
+            $locales       = $preLocales[0];
         } else {
-            $this->currentLocale = $this->getDefaultLocale($locale);
+            $locales       = $preLocales;
+        }
+
+        $result = setlocale($category, $locales);
+
+        if (! $result) {
+            @putenv("{$strCategory}={$locales[0]}");
+            @putenv("LANG={$locales[0]}");
+            @putenv("LANGUAGE={$locales[0]}");
+
+            $this->currentLocale = $this->getDefaultLocale($result, $category);
             $this->emulateGettext = true;
+        } else {
+            $this->currentLocale = $result;
+            $this->emulateGettext = false;
         }
 
         if (array_key_exists($this->defaultDomain, $this->textDomains)) {
@@ -310,5 +332,14 @@ class GettextFallback
         $l10n = $this->getReader($domain, $category);
 
         return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+    }
+
+    protected function checkCategory($category)
+    {
+        if (in_array($category, array_keys($this->lcCategories))) {
+            return $this->lcCategories[$category];
+        }
+
+        return 'LC_ALL';
     }
 }

@@ -51,24 +51,11 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return array(
-            'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
             'gettext.update',
         );
-    }
-
-    /**
-     * Register gettext.
-     *
-     * @return void
-     */
-    protected function registerGettext()
-    {
-        $this->app['gettext'] = $this->app->share(function ($app) {
-            return new Gettext();
-        });
     }
 
     /**
