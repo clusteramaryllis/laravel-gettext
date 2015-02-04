@@ -46,7 +46,6 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
@@ -66,18 +65,6 @@ class GettextServiceProvider extends ServiceProvider
         $this->publishes([$source => config_path('gettext.php')]);
 
         $this->mergeConfigFrom($source, 'gettext');
-    }
-
-    /**
-     * Register gettext.
-     *
-     * @return void
-     */
-    protected function registerGettext()
-    {
-        $this->app['gettext'] = $this->app->share(function ($app) {
-            return new Gettext();
-        });
     }
 
     /**
