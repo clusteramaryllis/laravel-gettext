@@ -65,10 +65,10 @@ if (! function_exists('gettext')) {
 }
 
 if (! function_exists('set_locale')) {
-    function set_locale($category, $locale)
+    function set_locale($category)
     {
         global $_gettext_fallback;
-        return $_gettext_fallback->setLocale($category, $locale);
+        return call_user_func_array([$_gettext_fallback, 'setLocale'], func_get_args());
     }
 }
 
