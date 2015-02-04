@@ -104,11 +104,11 @@ class BaseCommand extends Command
             $pluralFormsValue = $pluralForms;
         }
 
-        $languages[$flag] = array(
+        $languages[$flag] = [
             'locale' => $localeValue,
             'encoding' => $encodingValue,
             'plural_forms' => $pluralFormsValue,
-        );
+        ];
 
         return $languages;
     }

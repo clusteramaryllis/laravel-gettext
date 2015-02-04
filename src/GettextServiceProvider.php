@@ -50,12 +50,12 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array(
+        return [
             'gettext.generator',
             'gettext.config',
             'gettext.create',
             'gettext.update',
-        );
+        ];
     }
 
     /**
