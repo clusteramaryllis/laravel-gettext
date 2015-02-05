@@ -123,9 +123,15 @@ class Gettext
             $domain = $this->defaultDomain;
         }
 
-        return array_key_exists('codeset', $this->textDomains[$domain]) ?
-            $this->textDomains[$domain]['codeset'] :
-            ini_get('mbstring.internal_encoding');
+        if (array_key_exists('codeset', $this->textDomains[$domain])) {
+            return $this->textDomains[$domain]['codeset'];
+        }
+
+        if (@ini_get('mbstring.internal_encoding')) {
+            return @ini_get('mbstring.internal_encoding');
+        }
+
+        return 'UTF-8';
     }
 
     public function getDefaultLocale($locale, $category = "LC_ALL")

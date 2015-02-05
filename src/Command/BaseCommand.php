@@ -18,7 +18,7 @@ class BaseCommand extends Command
     /**
      * Manager instance.
      *
-     * @var \Clusteramaryllis\Gettext\Config\Repositories\Manager
+     * @var \Clusteramaryllis\Gettext\Repositories\Manager
      */
     protected $config;
 
