@@ -4,7 +4,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Clusteramaryllis\Gettext\Repositories\PoGenerator;
-use Clusteramaryllis\Gettext\Config\Repositories\Manager;
+use Clusteramaryllis\Gettext\Repositories\Manager;
 
 class BaseCommand extends Command
 {
