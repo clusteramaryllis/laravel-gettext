@@ -39,7 +39,6 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerGettext();
         $this->registerGenerator();
     }
 
