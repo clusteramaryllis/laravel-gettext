@@ -11,7 +11,7 @@ Add the composer repository to your *composer.json* file:
 ```json
 "require": {
 
-    // ...
+    /* ... */
 
     "clusteramaryllis/gettext": "0.3.x"
 
