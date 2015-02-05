@@ -27,7 +27,7 @@ class BaseCommand extends Command
      *
      * @return void
      */
-    public function __construct(Repository $generator, Manager $config)
+    public function __construct(PoGenerator $generator, Manager $config)
     {
         parent::__construct();
 
