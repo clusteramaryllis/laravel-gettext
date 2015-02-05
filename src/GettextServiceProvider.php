@@ -100,7 +100,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function bootCreateCommand()
     {
         $this->app['gettext.create'] = $this->app->share(function ($app) {
-            return new Command\GettextCreateCommand($app['gettext.repository'], $app['gettext.config']);
+            return new Command\GettextCreateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 
         $this->commands('gettext.create');
@@ -114,7 +114,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function bootUpdateCommand()
     {
         $this->app['gettext.update'] = $this->app->share(function ($app) {
-            return new Command\GettextUpdateCommand($app['gettext.repository'], $app['gettext.config']);
+            return new Command\GettextUpdateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 
         $this->commands('gettext.update');
