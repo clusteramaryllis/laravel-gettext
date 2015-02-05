@@ -10,7 +10,11 @@ Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "dev-master"
+
+    // ...
+
+    "clusteramaryllis/gettext": "0.3.x"
+
 }
 ```
 
@@ -19,9 +23,13 @@ For Laravel 4.2, checkout [0.3 branch](https://github.com/clusteramaryllis/larav
 And run `composer update`. Once finished, register via service provider in `config/app.php` in the `providers` array:
 
 ```php
-'providers' => array(
+'providers' => [
+    
+    // ...
+
     'Clusteramaryllis\Gettext\GettextServiceProvider',
-)
+    
+]
 ```
 
 Publish the configuration file (optional) (will create on `config/gettext.php`) :
