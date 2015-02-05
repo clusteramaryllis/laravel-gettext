@@ -9,25 +9,6 @@
             "email": "clusteramaryllis77@gmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "package",
-            "package": {  
-                "name": "php-gettext/php-gettext",
-                "version": "1.0.11",
-                "dist": {
-                    "type": "tar",
-                    "url": "https://launchpad.net/php-gettext/trunk/1.0.11/+download/php-gettext-1.0.11.tar.gz"
-                },
-                "autoload": {
-                    "classmap": [
-                        "gettext.php",
-                        "streams.php"
-                    ]
-                }
-            }
-        }
-    ],
     "require": {
         "php": ">=5.4.0",
         "illuminate/config": "4.2.*",
@@ -42,9 +23,13 @@
         "ext-gettext": "*"
     },
     "autoload": {
+        "classmap": [
+            "php-gettext/gettext.php",
+            "php-gettext/streams.php"
+        ],
         "psr-4": {
             "Clusteramaryllis\\Gettext\\": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
