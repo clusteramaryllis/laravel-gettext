@@ -5,11 +5,6 @@ use Illuminate\Support\ServiceProvider;
 class GettextServiceProvider extends ServiceProvider
 {
     /**
-     * Default namespace
-     */
-    const DEFAULT_NAMESPACE = 'clusteramaryllis/gettext';
-
-    /**
      * Indicates if loading of the provider is deferred.
      *
      * @var bool
@@ -23,7 +18,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package(static::DEFAULT_NAMESPACE, static::DEFAULT_NAMESPACE, __DIR__);
+        $this->setupConfig();
 
         require_once __DIR__."/helpers.php";
 
@@ -55,6 +50,20 @@ class GettextServiceProvider extends ServiceProvider
             'gettext.create',
             'gettext.update',
         ];
+    }
+
+    /**
+     * Setup config.
+     * 
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $source = realpath(__DIR__.'/../config/gettext.php');
+
+        $this->publishes([$source => config_path('gettext.php')]);
+
+        $this->mergeConfigFrom($source, 'gettext');
     }
 
     /**
@@ -91,7 +100,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function bootCreateCommand()
     {
         $this->app['gettext.create'] = $this->app->share(function ($app) {
-            return new Command\GettextCreateCommand($app['gettext.repository'], $app['gettext.config']);
+            return new Command\GettextCreateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 
         $this->commands('gettext.create');
@@ -105,7 +114,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function bootUpdateCommand()
     {
         $this->app['gettext.update'] = $this->app->share(function ($app) {
-            return new Command\GettextUpdateCommand($app['gettext.repository'], $app['gettext.config']);
+            return new Command\GettextUpdateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 
         $this->commands('gettext.update');
