@@ -10,11 +10,7 @@ Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-
-    /* ... */
-
     "clusteramaryllis/gettext": "0.3.x"
-
 }
 ```
 
@@ -22,11 +18,11 @@ And run `composer update`. Once finished, register via service provider in `app/
 
 ```php
 'providers' => [
-    
+
     // ...
 
     'Clusteramaryllis\Gettext\GettextServiceProvider',
-    
+
 ]
 ```
 
