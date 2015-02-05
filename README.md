@@ -52,4 +52,4 @@ Once done, you can easily translate your application using tools such as PoEdit.
 
 ### Acknowledgements
 
-This package is inspired by [laravel-gettext](https://github.com/xinax/laravel-gettext/) by Nicolás Daniel Palumbo for .po files creation & utilize [php-gettext](https:://launchpad.net/php-gettext/) package by Danilo Segan.
+This package is inspired by [laravel-gettext](https://github.com/xinax/laravel-gettext/) by Nicolás Daniel Palumbo for .po files creation & utilize [php-gettext](https://launchpad.net/php-gettext/) package by Danilo Segan.
