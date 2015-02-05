@@ -81,6 +81,20 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
+     * Setup config.
+     * 
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $source = realpath(__DIR__.'/../config/gettext.php');
+
+        $this->publishes([$source => config_path('gettext.php')]);
+
+        $this->mergeConfigFrom($source, 'gettext');
+    }
+
+    /**
      * Register repository.
      *
      * @return void
