@@ -114,9 +114,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function bootConfig()
     {
         $this->app['gettext.config'] = $this->app->share(function ($app) {
-            $config = new Repositories\Manager();
-
-            return $config->setPackagePath($app['path.base']."/vendor");
+            return new Repositories\Manager();
         });
     }
 
