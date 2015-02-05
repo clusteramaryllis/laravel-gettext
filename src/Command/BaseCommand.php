@@ -2,7 +2,6 @@
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Clusteramaryllis\Gettext\Repositories\PoGenerator;
 use Clusteramaryllis\Gettext\Repositories\Manager;
 
@@ -52,18 +51,6 @@ class BaseCommand extends Command
             }
 
             return $source;
-        }
-
-        $bench = $this->input->getOption('bench');
-
-        if (! is_null($bench)) {
-            return array($this->laravel['path.base']."/workbench/{$bench}");
-        }
-
-        $package = $this->input->getArgument('package');
-
-        if (! is_null($package)) {
-            return array($this->config->getPackagePath()."/{$package}");
         }
 
         return $this->config->getSourcePaths();
@@ -246,20 +233,9 @@ class BaseCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function getArguments()
-    {
-        return [
-            ['package', InputArgument::OPTIONAL, 'The name of the package to scan.'],
-        ];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     protected function getOptions()
     {
         return [
-            ['bench', 'b', InputOption::VALUE_OPTIONAL, 'The name of the workbench to scan', null],
             ['sources', 's', InputOption::VALUE_OPTIONAL, 'The list of source directories to scan separate by , (relative to laravel base path)', null],
             ['destination', 'dt', InputOption::VALUE_OPTIONAL, 'The destination path of generated po files (relative to laravel base path)', null],
             ['storage', 'st', InputOption::VALUE_OPTIONAL, 'The storage path to store compiled blade files (relative to laravel base path)', null],

@@ -78,19 +78,6 @@ class Manager
     }
 
     /**
-     * Set the default package path.
-     *
-     * @param  string $packagePath
-     * @return $this
-     */
-    public function setPackagePath($packagePath)
-    {
-        $this->packagePath = $packagePath;
-
-        return $this;
-    }
-
-    /**
      * Set the default source paths.
      *
      * @param  array $paths
@@ -176,16 +163,6 @@ class Manager
     public function setProject($project)
     {
         return $this->setConfig("project_name", $project);
-    }
-
-    /**
-     * Get the default package path.
-     *
-     * @return string
-     */
-    public function getPackagePath()
-    {
-        return $this->packagePath;
     }
 
     /**
