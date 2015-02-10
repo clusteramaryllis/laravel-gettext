@@ -17,13 +17,6 @@ class Manager
     protected $config = [];
 
     /**
-     * Default package path.
-     *
-     * @var string
-     */
-    protected $packagePath = __DIR__;
-
-    /**
      * Constructor.
      *
      * @param array  $config
