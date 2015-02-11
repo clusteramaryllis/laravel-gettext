@@ -1,15 +1,22 @@
 <?php
 
-class GettextTest extends PHPUnit_Framework_TestCase
+class GettextTest extends Orchestra\Testbench\TestCase
 {
     protected $gettext;
 
     public function setUp()
     {
+        parent::setUp();
+
         bindtextdomain('firstdomain', __DIR__."/../locale");
         bindtextdomain('seconddomain', __DIR__."/../locale");
 
         set_locale(LC_ALL, 'en_US.UTF-8');
+    }
+
+    public function getPackageProviders()
+    {
+        return ['Clusteramaryllis\Gettext\GettextServiceProvider'];
     }
 
     public function testGetText()

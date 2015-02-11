@@ -206,9 +206,9 @@ class Gettext
         return $this->currentLocale;
     }
 
-    public function encode($text)
+    public function encode($text, $domain = null)
     {
-        $targetEncoding = $this->getCodeset();
+        $targetEncoding = $this->getCodeset($domain);
 
         if (function_exists('mb_detect_encoding')) {
             $sourceEncoding = mb_detect_encoding($text);
@@ -268,28 +268,28 @@ class Gettext
     {
         $l10n = $this->getReader($domain);
 
-        return $this->encode($l10n->translate($msgid));
+        return $this->encode($l10n->translate($msgid), $domain);
     }
 
     public function dNGetText($domain, $msgid1, $msgid2, $n)
     {
         $l10n = $this->getReader($domain);
 
-        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     public function dCGetText($domain, $msgid, $category)
     {
         $l10n = $this->getReader($domain, $category);
 
-        return $this->encode($l10n->translate($msgid));
+        return $this->encode($l10n->translate($msgid), $domain);
     }
 
     public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
     {
         $l10n = $this->getReader($domain, $category);
 
-        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     public function pGetText($context, $msgid)
@@ -303,14 +303,14 @@ class Gettext
     {
         $l10n = $this->getReader($domain);
 
-        return $this->encode($l10n->pgettext($context, $msgid));
+        return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     public function dCPGetText($domain, $context, $msgid, $category)
     {
         $l10n = $this->getReader($domain, $category);
 
-        return $this->encode($l10n->pgettext($context, $msgid));
+        return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     public function nPGetText($context, $msgid1, $msgid2, $n)
@@ -324,14 +324,14 @@ class Gettext
     {
         $l10n = $this->getReader($domain);
 
-        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
     {
         $l10n = $this->getReader($domain, $category);
 
-        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     protected function checkCategory($category)
