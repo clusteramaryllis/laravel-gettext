@@ -34,6 +34,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerRepository();
         $this->registerGenerator();
     }
 
@@ -45,6 +46,7 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
+            'gettext.repository',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
@@ -67,35 +69,7 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Setup config.
-     * 
-     * @return void
-     */
-    protected function setupConfig()
-    {
-        $source = realpath(__DIR__.'/../config/gettext.php');
-
-        $this->publishes([$source => config_path('gettext.php')]);
-
-        $this->mergeConfigFrom($source, 'gettext');
-    }
-
-    /**
-     * Setup config.
-     * 
-     * @return void
-     */
-    protected function setupConfig()
-    {
-        $source = realpath(__DIR__.'/../config/gettext.php');
-
-        $this->publishes([$source => config_path('gettext.php')]);
-
-        $this->mergeConfigFrom($source, 'gettext');
-    }
-
-    /**
-     * Register repository.
+     * Register generator.
      *
      * @return void
      */
@@ -103,6 +77,18 @@ class GettextServiceProvider extends ServiceProvider
     {
         $this->app['gettext.generator'] = $this->app->share(function ($app) {
             return new Repositories\PoGenerator($app['files'], $app['path.base']);
+        });
+    }
+
+    /**
+     * Register repository.
+     *
+     * @return void
+     */
+    protected function registerRepository()
+    {
+        $this->app['gettext.repository'] = $this->app->share(function ($app) {
+            return new Repositories\Gettext();
         });
     }
 

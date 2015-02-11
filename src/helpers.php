@@ -1,74 +1,61 @@
 <?php
 
-$_gettext_fallback = new \Clusteramaryllis\Gettext\Repositories\Gettext();
-
 if (! function_exists('gettext')) {
     function bindtextdomain($domain, $path)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->bindTextDomain($domain, $path);
+        return app('gettext.repository')->bindTextDomain($domain, $path);
     }
 
     function bind_textdomain_codeset($domain, $codeset)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->bindTextDomainCodeset($domain, $codeset);
+        return app('gettext.repository')->bindTextDomainCodeset($domain, $codeset);
     }
 
     function textdomain($domain = null)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->textDomain($domain);
+        return app('gettext.repository')->textDomain($domain);
     }
 
     function gettext($msgid)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->getText($msgid);
+        return app('gettext.repository')->getText($msgid);
     }
 
     function _($msgid)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->getText($msgid);
+        return app('gettext.repository')->getText($msgid);
     }
 
     function ngettext($singular, $plural, $number)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->nGetText($singular, $plural, $number);
+        return app('gettext.repository')->nGetText($singular, $plural, $number);
     }
 
     function dgettext($domain, $msgid)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->dGetText($domain, $msgid);
+        return app('gettext.repository')->dGetText($domain, $msgid);
     }
 
     function dngettext($domain, $singular, $plural, $number)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->dNGetText($domain, $singular, $plural, $number);
+        return app('gettext.repository')->dNGetText($domain, $singular, $plural, $number);
     }
 
     function dcgettext($domain, $msgid, $category)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->dCGetText($domain, $msgid, $category);
+        return app('gettext.repository')->dCGetText($domain, $msgid, $category);
     }
 
     function dcngettext($domain, $singular, $plural, $number, $category)
     {
-        global $_gettext_fallback;
-        return $_gettext_fallback->dCNGetText($domain, $singular, $plural, $number, $category);
+        return app('gettext.repository')->dCNGetText($domain, $singular, $plural, $number, $category);
     }
 }
 
 if (! function_exists('set_locale')) {
     function set_locale($category)
     {
-        global $_gettext_fallback;
-        return call_user_func_array([$_gettext_fallback, 'setLocale'], func_get_args());
+        return call_user_func_array([app('gettext.repository'), 'setLocale'], func_get_args());
     }
 }
 
