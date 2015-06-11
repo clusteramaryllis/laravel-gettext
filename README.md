@@ -1,6 +1,6 @@
 # laravel-gettext
 
-[![Build Status](https://travis-ci.org/clusteramaryllis/laravel-gettext.svg?branch=1.0)](https://travis-ci.org/clusteramaryllis/laravel-gettext)
+[![Build Status](https://travis-ci.org/clusteramaryllis/laravel-gettext.svg?branch=master)](https://travis-ci.org/clusteramaryllis/laravel-gettext)
 
 ### Installation
 
