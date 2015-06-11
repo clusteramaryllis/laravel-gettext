@@ -14,7 +14,7 @@ class GettextTest extends Orchestra\Testbench\TestCase
         set_locale(LC_ALL, 'en_US.UTF-8');
     }
 
-    public function getPackageProviders()
+    public function getPackageProviders($app)
     {
         return ['Clusteramaryllis\Gettext\GettextServiceProvider'];
     }
