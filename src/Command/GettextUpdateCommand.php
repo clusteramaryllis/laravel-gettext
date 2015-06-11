@@ -1,4 +1,6 @@
-<?php namespace Clusteramaryllis\Gettext\Command;
+<?php 
+
+namespace Clusteramaryllis\Gettext\Command;
 
 class GettextUpdateCommand extends BaseCommand
 {

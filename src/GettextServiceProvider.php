@@ -1,4 +1,6 @@
-<?php namespace Clusteramaryllis\Gettext;
+<?php 
+
+namespace Clusteramaryllis\Gettext;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -56,7 +58,7 @@ class GettextServiceProvider extends ServiceProvider
 
     /**
      * Setup config.
-     * 
+     *
      * @return void
      */
     protected function setupConfig()
@@ -75,7 +77,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     protected function registerGenerator()
     {
-        $this->app['gettext.generator'] = $this->app->share(function ($app) {
+        $this->app->singleton('gettext.generator', function ($app) {
             return new Repositories\PoGenerator($app['files'], $app['path.base']);
         });
     }
@@ -87,7 +89,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     protected function registerRepository()
     {
-        $this->app['gettext.repository'] = $this->app->share(function ($app) {
+        $this->app->singleton('gettext.repository', function ($app) {
             return new Repositories\Gettext();
         });
     }
@@ -99,7 +101,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     protected function bootConfig()
     {
-        $this->app['gettext.config'] = $this->app->share(function ($app) {
+        $this->app->singleton('gettext.config', function ($app) {
             return new Repositories\Manager();
         });
     }
@@ -111,7 +113,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     protected function bootCreateCommand()
     {
-        $this->app['gettext.create'] = $this->app->share(function ($app) {
+        $this->app->singleton('gettext.create', function ($app) {
             return new Command\GettextCreateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 
@@ -125,7 +127,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     protected function bootUpdateCommand()
     {
-        $this->app['gettext.update'] = $this->app->share(function ($app) {
+        $this->app->singleton('gettext.update', function ($app) {
             return new Command\GettextUpdateCommand($app['gettext.generator'], $app['gettext.config']);
         });
 

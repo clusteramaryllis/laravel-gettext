@@ -1,4 +1,6 @@
-<?php namespace Clusteramaryllis\Gettext\Repositories;
+<?php 
+
+namespace Clusteramaryllis\Gettext\Repositories;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;

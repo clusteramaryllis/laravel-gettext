@@ -1,4 +1,6 @@
-<?php namespace Clusteramaryllis\Gettext\Command;
+<?php 
+
+namespace Clusteramaryllis\Gettext\Command;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
