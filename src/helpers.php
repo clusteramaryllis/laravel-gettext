@@ -231,8 +231,9 @@ if (! function_exists('npgettext')) {
 
 if (! function_exists('dnpgettext')) {
     /**
-     * Context version of ngettext.
+     * Override the current domain in a context ngettext call.
      * 
+     * @param  string $domain
      * @param  string $context
      * @param  string $msgid1 
      * @param  string $msgid2 

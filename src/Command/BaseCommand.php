@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Clusteramaryllis\Gettext\Repositories\PoGenerator;
 use Clusteramaryllis\Gettext\Repositories\Manager;
 
-class BaseCommand extends Command
+abstract class BaseCommand extends Command
 {
     /**
      * Repository instance.
