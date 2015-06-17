@@ -53,7 +53,7 @@ Check with `php artisan gettext:create --help` or `php artisan gettext:update --
 php artisan gettext:create --sources="app/Http/Controllers, resources/views" --destination="resources/locale" --locale="en_US" 
 ```
 
-This will generate .po files in `resources/locale/en_US/LC_MESSAGES/messages.po` & will scan any string that utilize [php-gettext](http://php.net/manual/en/ref.gettext.php) function on `app/Http/controllers` & `resources/views`
+This will generate .po files in `resources/locale/en_US/LC_MESSAGES/messages.po` & will scan any string that utilize [php-gettext](http://php.net/manual/en/ref.gettext.php) function on `app/Http/Controllers` & `resources/views`
 
 Once done, you can easily translate your application using tools such as PoEdit.
 
