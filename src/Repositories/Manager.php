@@ -26,16 +26,16 @@ class Manager
      */
     public function __construct(array $config = [])
     {
-        $this->setConfigs($config ?: Config::get(static::PACKAGE_DEFAULT_CONFIG));
+        $this->setMultipleConfig($config ?: Config::get(static::PACKAGE_DEFAULT_CONFIG));
     }
 
     /**
-     * Set configs.
+     * Set multiple config.
      *
      * @param  array $config
      * @return $this
      */
-    public function setConfigs(array $config)
+    public function setMultipleConfig(array $config)
     {
         $this->config = $config;
 

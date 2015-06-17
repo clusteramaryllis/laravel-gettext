@@ -2,9 +2,9 @@
 
 namespace Clusteramaryllis\Gettext\Repositories;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Illuminate\View\Compilers\BladeCompiler as Compiler;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\View\Compilers\BladeCompiler;
 use Clusteramaryllis\Gettext\Exception\ResourceNotFoundException;
 
 class PoGenerator
@@ -37,17 +37,17 @@ class PoGenerator
     }
 
     /**
-     * Compile blade views.
+     * Compile views.
      *
      * @param  array  $paths
      * @param  string $storagePath
      * @return $this
      */
-    public function compileBladeViews(array $paths, $storagePath)
+    public function compileViews(array $paths, $storagePath)
     {
         $this->makeDestination($storagePath);
 
-        $compiler = new Compiler($this->files, $storagePath);
+        $compiler = new BladeCompiler($this->files, $storagePath);
 
         foreach ($paths as $path) {
             $files = $this->files->glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
@@ -188,7 +188,7 @@ class PoGenerator
         $storagePath .= "/{$domain}";
 
         if (! $cached) {
-            $this->compileBladeViews($paths, $storagePath);
+            $this->compileViews($paths, $storagePath);
         }
 
         $contents = $this->preparePoContent(
@@ -262,7 +262,7 @@ class PoGenerator
         $storagePath .= "/{$domain}";
 
         if (! $cached) {
-            $this->compileBladeViews($paths, $storagePath);
+            $this->compileViews($paths, $storagePath);
         }
 
         $oldContents = $this->files->get($filename);
