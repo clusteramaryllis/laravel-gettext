@@ -77,7 +77,7 @@ class Gettext
            ."(?:\.(?P<charset>[-A-Za-z0-9_]+))?"
            ."(?:@(?P<modifier>[-A-Za-z0-9_]+))?$/";
 
-        if (is_string($locale)) {
+        if (is_string($locale) && $locale !== '') {
             if (preg_match($pattern, $locale, $matches)) {
                 if (array_key_exists("modifier", $matches)) {
                     if (array_key_exists("country", $matches)) {
@@ -137,12 +137,12 @@ class Gettext
         }
 
         if (! array_key_exists('l10n', $this->textDomains[$domain])) {
-            $locale      = $this->setLocale(LC_MESSAGES, 0);
-            $boundPath   = array_key_exists('path', $this->textDomains[$domain]) ?
+            $locale = $this->setLocale(LC_MESSAGES, 0);
+            $boundPath = array_key_exists('path', $this->textDomains[$domain]) ?
                 $this->textDomains[$domain]['path'] : './';
-            $subPath     = $this->lcCategories[$category]."/{$domain}.mo";
+            $subPath = $this->lcCategories[$category]."/{$domain}.mo";
             $localeNames = $this->getLocalesList($locale);
-            $input       = null;
+            $input = null;
 
             foreach ($localeNames as $locale) {
                 $fullPath = $boundPath.$locale."/".$subPath;
@@ -264,9 +264,9 @@ class Gettext
         }
 
         if (is_array($preLocales[0])) {
-            $locales       = $preLocales[0];
+            $locales = $preLocales[0];
         } else {
-            $locales       = $preLocales;
+            $locales = $preLocales;
         }
 
         $result = setlocale($category, $locales);
@@ -355,7 +355,7 @@ class Gettext
      */
     public function textDomain($domain = null)
     {
-        if (is_string($domain)) {
+        if (is_string($domain) && $domain !== '') {
             return $this->defaultDomain = $domain;
         }
 

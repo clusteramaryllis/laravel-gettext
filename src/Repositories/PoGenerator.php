@@ -32,7 +32,7 @@ class PoGenerator
      */
     public function __construct(Filesystem $files, $basePath)
     {
-        $this->files    = $files;
+        $this->files = $files;
         $this->basePath = $basePath;
     }
 
@@ -59,7 +59,7 @@ class PoGenerator
 
                 $compiler->setPath($file);
 
-                $contents     = $compiler->compileString($this->files->get($file));
+                $contents = $compiler->compileString($this->files->get($file));
                 $compiledPath = $compiler->getCompiledPath($compiler->getPath());
 
                 $this->files->put($compiledPath.'.php', $contents);
@@ -96,11 +96,11 @@ class PoGenerator
         $pluralForms = null,
         $timestamp = null
     ) {
-        $timestamp  = $timestamp ?: date("Y-m-d H:iO");
+        $timestamp = $timestamp ?: date("Y-m-d H:iO");
         $domainPath = $this->domainPath($destinationPath, $locale);
 
         // Split every 5 keywords & enter new line
-        $chunk       = array_chunk($keywords, 5);
+        $chunk = array_chunk($keywords, 5);
         $strKeywords = "\"X-Poedit-KeywordsList: ";
 
         foreach ($chunk as $key => $value) {
@@ -321,7 +321,7 @@ class PoGenerator
             throw new ResourceNotFoundException("File\Directory does not exist at path {$relativeTo}");
         }
 
-        $path       = str_replace('\\', '/', realpath($path));
+        $path = str_replace('\\', '/', realpath($path));
         $relativeTo = str_replace('\\', '/', realpath($relativeTo));
 
         return str_replace(rtrim($relativeTo, "/\\")."/", "", $path);
@@ -344,9 +344,9 @@ class PoGenerator
             throw new ResourceNotFoundException("File\Directory does not exist at path {$relativeTo}");
         }
 
-        $path       = realpath($this->files->isDirectory($path) ? rtrim($path, "/\\") : dirname($path));
+        $path = realpath($this->files->isDirectory($path) ? rtrim($path, "/\\") : dirname($path));
         $relativeTo = realpath($this->files->isDirectory($relativeTo) ? rtrim($relativeTo, "/\\") : dirname($relativeTo));
-        $path       = explode('/', str_replace("\\", "/", $path));
+        $path = explode('/', str_replace("\\", "/", $path));
         $relativeTo = explode('/', str_replace("\\", "/", $relativeTo));
 
         $relPath = $relativeTo;
@@ -359,7 +359,7 @@ class PoGenerator
 
                 if ($remaining > 1) {
                     $padLength = (count($relPath) + $remaining) * -1;
-                    $relPath   = array_pad($relPath, $padLength, "..");
+                    $relPath = array_pad($relPath, $padLength, "..");
 
                     break;
                 }
