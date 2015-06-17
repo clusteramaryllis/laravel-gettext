@@ -30,11 +30,11 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('unit', 'config'), $paths);
     }
 
-    public function testCompileBladeViews()
+    public function testCompileViews()
     {
         $compiler = new BladeCompiler(new Filesystem(), $this->config['storage_path']);
 
-        $this->generator->compileBladeViews($this->config['paths'], $this->config['storage_path']);
+        $this->generator->compileViews($this->config['paths'], $this->config['storage_path']);
 
         foreach ($this->config['paths'] as $path) {
             $files = glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);

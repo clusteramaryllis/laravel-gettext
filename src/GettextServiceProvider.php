@@ -7,16 +7,12 @@ use Illuminate\Support\ServiceProvider;
 class GettextServiceProvider extends ServiceProvider
 {
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
+     * {@inheritDoc}
      */
     protected $defer = true;
 
     /**
-     * Bootstrap the application events.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function boot()
     {
@@ -30,9 +26,7 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function register()
     {
@@ -41,9 +35,7 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function provides()
     {

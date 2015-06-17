@@ -193,7 +193,7 @@ class BaseCommand extends Command
 
         $method = "get".(ucfirst($name));
 
-        return call_user_func_array(array($this->config, $method), array());
+        return call_user_func_array(array($this->config, $method), []);
     }
 
     /**
@@ -211,7 +211,7 @@ class BaseCommand extends Command
 
         $method = "get".(ucfirst($name));
 
-        return call_user_func_array(array($this->config, $method), array());
+        return call_user_func_array(array($this->config, $method), []);
     }
 
     /**
@@ -229,7 +229,7 @@ class BaseCommand extends Command
 
         $method = "get".(ucfirst($name))."Path";
 
-        return call_user_func_array(array($this->config, $method), array());
+        return call_user_func_array(array($this->config, $method), []);
     }
 
     /**

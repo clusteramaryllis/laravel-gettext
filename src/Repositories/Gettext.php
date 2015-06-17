@@ -8,14 +8,39 @@ use InvalidArgumentException;
 
 class Gettext
 {
+    /**
+     * Emulate non-native php-gettext or not.
+     * 
+     * @var boolean
+     */
     protected $emulateGettext = false;
 
+    /**
+     * Text domains.
+     * 
+     * @var array
+     */
     protected $textDomains = [];
 
+    /**
+     * Default domain.
+     * 
+     * @var string
+     */
     protected $defaultDomain = 'messages';
 
+    /**
+     * Current locale.
+     * 
+     * @var string
+     */
     protected $currentLocale = '';
 
+    /**
+     * LC categories.
+     * 
+     * @var array
+     */
     protected $lcCategories = [
         'LC_CTYPE',
         'LC_NUMERIC',
@@ -26,11 +51,24 @@ class Gettext
         'LC_ALL',
     ];
 
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
     public function __construct()
     {
         defined('LC_MESSAGES') || define('LC_MESSAGES', 5);
     }
 
+    /**
+     * Figure out all possible locale names and start with the most
+     * specific ones.  I.e. for sr_CS.UTF-8@latin, look through all of
+     * sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
+     * 
+     * @param  string $locale
+     * @return string
+     */
     public function getLocalesList($locale)
     {
         $localeNames = [];
@@ -80,6 +118,14 @@ class Gettext
         return $localeNames;
     }
 
+    /**
+     * Get a StreamReader for the given text domain.
+     * 
+     * @param  string|null $domain
+     * @param  int         $category
+     * @param  bool        $cache
+     * @return \gettext_reader
+     */
     public function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
     {
         if (! is_string($domain) || $domain === '') {
@@ -114,11 +160,22 @@ class Gettext
         return $this->textDomains[$domain]['l10n'];
     }
 
+    /**
+     * Return whether we are using our emulated gettext API or PHP built-in one.
+     * 
+     * @return bool
+     */
     public function getEmulateGettext()
     {
         return $this->emulateGettext;
     }
 
+    /**
+     * Get the codeset for the given domain.
+     * 
+     * @param  string|null $domain
+     * @return string
+     */
     public function getCodeset($domain = null)
     {
         if (! is_string($domain) || $domain === '') {
@@ -136,6 +193,13 @@ class Gettext
         return 'UTF-8';
     }
 
+    /**
+     * Return passed in $locale, or environment variable if $locale == ''.
+     * 
+     * @param  string $locale
+     * @param  string $category
+     * @return string
+     */
     public function getDefaultLocale($locale, $category = "LC_ALL")
     {
         if (! is_string($locale) || $locale === '') {
@@ -155,6 +219,12 @@ class Gettext
         return $locale;
     }
 
+    /**
+     * Check if the current locale is supported on this system.
+     * 
+     * @param  callable|null $func
+     * @return bool
+     */
     public function hasLocaleAndFunction($func = null)
     {
         if ($func && function_exists($func)) {
@@ -164,6 +234,12 @@ class Gettext
         return ! $this->emulateGettext;
     }
 
+    /**
+     * Set a requested locale, if needed emulates it.
+     * 
+     * @param  mixed $category
+     * @return string
+     */
     public function setLocale($category)
     {
         $argsCount = func_num_args();
@@ -214,6 +290,13 @@ class Gettext
         return $this->currentLocale;
     }
 
+    /**
+     * Convert the given string to the encoding set by bind_textdomain_codeset.
+     * 
+     * @param  string      $text
+     * @param  string|null $domain
+     * @return string
+     */
     public function encode($text, $domain = null)
     {
         $targetEncoding = $this->getCodeset($domain);
@@ -229,6 +312,13 @@ class Gettext
         return $text;
     }
 
+    /**
+     * Set the path for a domain.
+     * 
+     * @param  string $domain
+     * @param  string $path
+     * @return string
+     */
     public function bindTextDomain($domain, $path)
     {
         $path = rtrim($path, "/\\")."/";
@@ -240,6 +330,14 @@ class Gettext
         return $this->textDomains[$domain]['path'] = $path;
     }
 
+    /**
+     * Specify the character encoding in which the messages 
+     * from the DOMAIN message catalog will be returned.
+     * 
+     * @param  string $domain  
+     * @param  string $codeset 
+     * @return string          
+     */
     public function bindTextDomainCodeset($domain, $codeset)
     {
         if (! array_key_exists($domain, $this->textDomains)) {
@@ -249,6 +347,12 @@ class Gettext
         return $this->textDomains[$domain]['codeset'] = $codeset;
     }
 
+    /**
+     * Set the default domain.
+     * 
+     * @param  string|null $domain
+     * @return string         
+     */
     public function textDomain($domain = null)
     {
         if (is_string($domain)) {
@@ -258,6 +362,12 @@ class Gettext
         return $this->defaultDomain;
     }
 
+    /**
+     * Lookup a message in the current domain.
+     * 
+     * @param  string $msgid
+     * @return string        
+     */
     public function getText($msgid)
     {
         $l10n = $this->getReader();
@@ -265,6 +375,14 @@ class Gettext
         return $this->encode($l10n->translate($msgid));
     }
 
+    /**
+     * Plural version of gettext.
+     * 
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @return string
+     */
     public function nGetText($msgid1, $msgid2, $n)
     {
         $l10n = $this->getReader();
@@ -272,6 +390,13 @@ class Gettext
         return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
     }
 
+    /**
+     * Override the current domain.
+     * 
+     * @param  string $domain
+     * @param  string $msgid 
+     * @return string        
+     */
     public function dGetText($domain, $msgid)
     {
         $l10n = $this->getReader($domain);
@@ -279,6 +404,15 @@ class Gettext
         return $this->encode($l10n->translate($msgid), $domain);
     }
 
+    /**
+     * Plural version of dgettext.
+     * 
+     * @param  string $domain
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @return string
+     */
     public function dNGetText($domain, $msgid1, $msgid2, $n)
     {
         $l10n = $this->getReader($domain);
@@ -286,6 +420,14 @@ class Gettext
         return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
+    /**
+     * Override the domain for a single lookup.
+     * 
+     * @param  string $domain   
+     * @param  string $msgid    
+     * @param  int    $category 
+     * @return string
+     */
     public function dCGetText($domain, $msgid, $category)
     {
         $l10n = $this->getReader($domain, $category);
@@ -293,6 +435,16 @@ class Gettext
         return $this->encode($l10n->translate($msgid), $domain);
     }
 
+    /**
+     * Plural version of dcgettext.
+     * 
+     * @param  string $domain
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @param  int    $category 
+     * @return string
+     */
     public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
     {
         $l10n = $this->getReader($domain, $category);
@@ -300,6 +452,13 @@ class Gettext
         return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
+    /**
+     * Context version of gettext.
+     * 
+     * @param  string $context
+     * @param  string $msgid
+     * @return string
+     */
     public function pGetText($context, $msgid)
     {
         $l10n = $this->getReader();
@@ -307,6 +466,14 @@ class Gettext
         return $this->encode($l10n->pgettext($context, $msgid));
     }
 
+    /**
+     * Override the current domain in a context gettext call.
+     * 
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid 
+     * @return string        
+     */
     public function dPGetText($domain, $context, $msgid)
     {
         $l10n = $this->getReader($domain);
@@ -314,6 +481,15 @@ class Gettext
         return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
+    /**
+     * Override the domain and category for a single context-based lookup.
+     * 
+     * @param  string $domain   
+     * @param  string $context
+     * @param  string $msgid    
+     * @param  int    $category 
+     * @return string
+     */
     public function dCPGetText($domain, $context, $msgid, $category)
     {
         $l10n = $this->getReader($domain, $category);
@@ -321,6 +497,15 @@ class Gettext
         return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
+    /**
+     * Context version of ngettext.
+     * 
+     * @param  string $context
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @return string
+     */
     public function nPGetText($context, $msgid1, $msgid2, $n)
     {
         $l10n = $this->getReader();
@@ -328,6 +513,16 @@ class Gettext
         return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
     }
 
+    /**
+     * Override the current domain in a context ngettext call.
+     * 
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @return string
+     */
     public function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
     {
         $l10n = $this->getReader($domain);
@@ -335,6 +530,17 @@ class Gettext
         return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
+    /**
+     * Override the domain and category for a plural context-based lookup.
+     * 
+     * @param  string $domain
+     * @param  string $context
+     * @param  string $msgid1 
+     * @param  string $msgid2 
+     * @param  int    $n      
+     * @param  int    $category 
+     * @return string
+     */
     public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
     {
         $l10n = $this->getReader($domain, $category);
@@ -342,6 +548,12 @@ class Gettext
         return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
+    /**
+     * Determine the correct category.
+     * 
+     * @param  int $category
+     * @return string
+     */
     protected function checkCategory($category)
     {
         if (in_array($category, array_keys($this->lcCategories))) {

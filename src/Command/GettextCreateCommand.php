@@ -19,9 +19,7 @@ class GettextCreateCommand extends BaseCommand
     protected $description = 'Create new po files based on the given paths';
 
     /**
-     * Execute the console command.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function fire()
     {

@@ -19,9 +19,7 @@ class GettextUpdateCommand extends BaseCommand
     protected $description = 'Update existing po files based on the given paths';
 
     /**
-     * Execute the console command.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function fire()
     {
