@@ -1,5 +1,5 @@
 /vendor
 composer.phar
 composer.lock
-.php_cs.cache
 .DS_Store
+.php_cs.cache
