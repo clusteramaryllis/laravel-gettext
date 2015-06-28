@@ -222,7 +222,7 @@ class Gettext
     /**
      * Check if the current locale is supported on this system.
      * 
-     * @param  callable|null $func
+     * @param  string|null $func
      * @return bool
      */
     public function hasLocaleAndFunction($func = null)
