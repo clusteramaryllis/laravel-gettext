@@ -29,7 +29,10 @@
         ],
         "psr-4": {
             "Clusteramaryllis\\Gettext\\": "src/"
-        }
+        },
+        files: [
+            "src/helpers.php"
+        ]
     },
     "minimum-stability": "stable"
 }

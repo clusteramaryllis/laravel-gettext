@@ -18,8 +18,6 @@ class GettextServiceProvider extends ServiceProvider
     {
         $this->setupConfig();
 
-        require_once __DIR__."/helpers.php";
-
         $this->bootConfig();
         $this->bootCreateCommand();
         $this->bootUpdateCommand();
