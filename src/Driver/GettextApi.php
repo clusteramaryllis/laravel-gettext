@@ -1,47 +1,47 @@
 <?php 
 
-namespace Clusteramaryllis\Gettext\Repositories;
+namespace Clusteramaryllis\Gettext\Driver;
 
 use FileReader;
 use gettext_reader;
 use InvalidArgumentException;
 
-class Gettext
+class GettextApi
 {
     /**
      * Emulate non-native php-gettext or not.
      * 
      * @var boolean
      */
-    protected $emulateGettext = false;
+    protected static $emulateGettext = false;
 
     /**
      * Text domains.
      * 
      * @var array
      */
-    protected $textDomains = [];
+    protected static $textDomains = [];
 
     /**
      * Default domain.
      * 
      * @var string
      */
-    protected $defaultDomain = 'messages';
+    protected static $defaultDomain = 'messages';
 
     /**
      * Current locale.
      * 
      * @var string
      */
-    protected $currentLocale = '';
+    protected static $currentLocale = '';
 
     /**
      * LC categories.
      * 
      * @var array
      */
-    protected $lcCategories = [
+    protected static $lcCategories = [
         'LC_CTYPE',
         'LC_NUMERIC',
         'LC_TIME',
@@ -52,16 +52,6 @@ class Gettext
     ];
 
     /**
-     * Constructor.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        defined('LC_MESSAGES') || define('LC_MESSAGES', 5);
-    }
-
-    /**
      * Figure out all possible locale names and start with the most
      * specific ones.  I.e. for sr_CS.UTF-8@latin, look through all of
      * sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
@@ -69,7 +59,7 @@ class Gettext
      * @param  string $locale
      * @return string
      */
-    public function getLocalesList($locale)
+    public static function getLocalesList($locale)
     {
         $localeNames = [];
         $pattern = "/^(?P<lang>[a-z]{2,3})"
@@ -126,22 +116,22 @@ class Gettext
      * @param  bool        $cache
      * @return \gettext_reader
      */
-    public function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
+    public static function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
     {
         if (! is_string($domain) || $domain === '') {
-            $domain = $this->defaultDomain;
+            $domain = static::$defaultDomain;
         }
 
-        if (! array_key_exists($domain, $this->textDomains)) {
-            $this->textDomains[$domain] = [];
+        if (! array_key_exists($domain, static::$textDomains)) {
+            static::$textDomains[$domain] = [];
         }
 
-        if (! array_key_exists('l10n', $this->textDomains[$domain])) {
-            $locale = $this->setLocale(LC_MESSAGES, 0);
-            $boundPath = array_key_exists('path', $this->textDomains[$domain]) ?
-                $this->textDomains[$domain]['path'] : './';
-            $subPath = $this->lcCategories[$category]."/{$domain}.mo";
-            $localeNames = $this->getLocalesList($locale);
+        if (! array_key_exists('l10n', static::$textDomains[$domain])) {
+            $locale = static::setLocale(LC_MESSAGES, 0);
+            $boundPath = array_key_exists('path', static::$textDomains[$domain]) ?
+                static::$textDomains[$domain]['path'] : './';
+            $subPath = static::$lcCategories[$category]."/{$domain}.mo";
+            $localeNames = static::getLocalesList($locale);
             $input = null;
 
             foreach ($localeNames as $locale) {
@@ -154,10 +144,10 @@ class Gettext
                 }
             }
 
-            $this->textDomains[$domain]['l10n'] = new gettext_reader($input, $cache);
+            static::$textDomains[$domain]['l10n'] = new gettext_reader($input, $cache);
         }
 
-        return $this->textDomains[$domain]['l10n'];
+        return static::$textDomains[$domain]['l10n'];
     }
 
     /**
@@ -165,9 +155,9 @@ class Gettext
      * 
      * @return bool
      */
-    public function getEmulateGettext()
+    public static function getEmulateGettext()
     {
-        return $this->emulateGettext;
+        return static::$emulateGettext;
     }
 
     /**
@@ -176,14 +166,14 @@ class Gettext
      * @param  string|null $domain
      * @return string
      */
-    public function getCodeset($domain = null)
+    public static function getCodeset($domain = null)
     {
         if (! is_string($domain) || $domain === '') {
-            $domain = $this->defaultDomain;
+            $domain = static::$defaultDomain;
         }
 
-        if (array_key_exists('codeset', $this->textDomains[$domain])) {
-            return $this->textDomains[$domain]['codeset'];
+        if (array_key_exists('codeset', static::$textDomains[$domain])) {
+            return static::$textDomains[$domain]['codeset'];
         }
 
         if (@ini_get('mbstring.internal_encoding')) {
@@ -200,19 +190,19 @@ class Gettext
      * @param  string $category
      * @return string
      */
-    public function getDefaultLocale($locale, $category = "LC_ALL")
+    public static function getDefaultLocale($locale, $category = "LC_ALL")
     {
         if (! is_string($locale) || $locale === '') {
-            if (getenv('LANG')) {
-                return getenv('LANG');
+            if (@getenv('LANG')) {
+                return @getenv('LANG');
             }
 
-            if (getenv('LANGUAGE')) {
-                return getenv('LANGUAGE');
+            if (@getenv('LANGUAGE')) {
+                return @getenv('LANGUAGE');
             }
 
-            if (getenv($category)) {
-                return getenv($category);
+            if (@getenv($category)) {
+                return @getenv($category);
             }
         }
 
@@ -225,13 +215,13 @@ class Gettext
      * @param  string|null $func
      * @return bool
      */
-    public function hasLocaleAndFunction($func = null)
+    public static function hasLocaleAndFunction($func = null)
     {
         if ($func && function_exists($func)) {
             return false;
         }
 
-        return ! $this->emulateGettext;
+        return ! static::$emulateGettext;
     }
 
     /**
@@ -240,7 +230,7 @@ class Gettext
      * @param  mixed $category
      * @return string
      */
-    public function setLocale($category)
+    public static function setLocale($category)
     {
         $argsCount = func_num_args();
 
@@ -250,17 +240,17 @@ class Gettext
             );
         }
 
-        $strCategory = $this->checkCategory($category);
+        $strCategory = static::checkCategory($category);
         $preLocales  = func_get_args();
 
         array_shift($preLocales);
 
         if (! is_array($preLocales[0]) && $preLocales[0] === 0) {
-            if ($this->currentLocale === '') {
-                return $this->setLocale($category, $this->currentLocale);
+            if (static::$currentLocale === '') {
+                return static::setLocale($category, static::$currentLocale);
             }
 
-            return $this->currentLocale;
+            return static::$currentLocale;
         }
 
         if (is_array($preLocales[0])) {
@@ -276,18 +266,18 @@ class Gettext
             @putenv("LANG={$locales[0]}");
             @putenv("LANGUAGE={$locales[0]}");
 
-            $this->currentLocale = $this->getDefaultLocale($result, $category);
-            $this->emulateGettext = true;
+            static::$currentLocale = static::getDefaultLocale($result, $category);
+            static::$emulateGettext = true;
         } else {
-            $this->currentLocale = $result;
-            $this->emulateGettext = false;
+            static::$currentLocale = $result;
+            static::$emulateGettext = false;
         }
 
-        if (array_key_exists($this->defaultDomain, $this->textDomains)) {
-            unset($this->textDomains[$this->defaultDomain]['l10n']);
+        if (array_key_exists(static::$defaultDomain, static::$textDomains)) {
+            unset(static::$textDomains[static::$defaultDomain]['l10n']);
         }
 
-        return $this->currentLocale;
+        return static::$currentLocale;
     }
 
     /**
@@ -297,9 +287,9 @@ class Gettext
      * @param  string|null $domain
      * @return string
      */
-    public function encode($text, $domain = null)
+    public static function encode($text, $domain = null)
     {
-        $targetEncoding = $this->getCodeset($domain);
+        $targetEncoding = static::getCodeset($domain);
 
         if (function_exists('mb_detect_encoding')) {
             $sourceEncoding = mb_detect_encoding($text);
@@ -319,15 +309,15 @@ class Gettext
      * @param  string $path
      * @return string
      */
-    public function bindTextDomain($domain, $path)
+    public static function bindTextDomain($domain, $path)
     {
         $path = rtrim($path, "/\\")."/";
 
-        if (! array_key_exists($domain, $this->textDomains)) {
-            $this->textDomains[$domain] = [];
+        if (! array_key_exists($domain, static::$textDomains)) {
+            static::$textDomains[$domain] = [];
         }
 
-        return $this->textDomains[$domain]['path'] = $path;
+        return static::$textDomains[$domain]['path'] = $path;
     }
 
     /**
@@ -338,13 +328,13 @@ class Gettext
      * @param  string $codeset 
      * @return string          
      */
-    public function bindTextDomainCodeset($domain, $codeset)
+    public static function bindTextDomainCodeset($domain, $codeset)
     {
-        if (! array_key_exists($domain, $this->textDomains)) {
-            $this->textDomains[$domain] = [];
+        if (! array_key_exists($domain, static::$textDomains)) {
+            static::$textDomains[$domain] = [];
         }
 
-        return $this->textDomains[$domain]['codeset'] = $codeset;
+        return static::$textDomains[$domain]['codeset'] = $codeset;
     }
 
     /**
@@ -353,13 +343,13 @@ class Gettext
      * @param  string|null $domain
      * @return string         
      */
-    public function textDomain($domain = null)
+    public static function textDomain($domain = null)
     {
         if (is_string($domain) && $domain !== '') {
-            return $this->defaultDomain = $domain;
+            return static::$defaultDomain = $domain;
         }
 
-        return $this->defaultDomain;
+        return static::$defaultDomain;
     }
 
     /**
@@ -368,11 +358,11 @@ class Gettext
      * @param  string $msgid
      * @return string        
      */
-    public function getText($msgid)
+    public static function getText($msgid)
     {
-        $l10n = $this->getReader();
+        $l10n = static::getReader();
 
-        return $this->encode($l10n->translate($msgid));
+        return static::encode($l10n->translate($msgid));
     }
 
     /**
@@ -383,11 +373,11 @@ class Gettext
      * @param  int    $n      
      * @return string
      */
-    public function nGetText($msgid1, $msgid2, $n)
+    public static function nGetText($msgid1, $msgid2, $n)
     {
-        $l10n = $this->getReader();
+        $l10n = static::getReader();
 
-        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
+        return static::encode($l10n->ngettext($msgid1, $msgid2, $n));
     }
 
     /**
@@ -397,11 +387,11 @@ class Gettext
      * @param  string $msgid 
      * @return string        
      */
-    public function dGetText($domain, $msgid)
+    public static function dGetText($domain, $msgid)
     {
-        $l10n = $this->getReader($domain);
+        $l10n = static::getReader($domain);
 
-        return $this->encode($l10n->translate($msgid), $domain);
+        return static::encode($l10n->translate($msgid), $domain);
     }
 
     /**
@@ -413,11 +403,11 @@ class Gettext
      * @param  int    $n      
      * @return string
      */
-    public function dNGetText($domain, $msgid1, $msgid2, $n)
+    public static function dNGetText($domain, $msgid1, $msgid2, $n)
     {
-        $l10n = $this->getReader($domain);
+        $l10n = static::getReader($domain);
 
-        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
+        return static::encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     /**
@@ -428,11 +418,11 @@ class Gettext
      * @param  int    $category 
      * @return string
      */
-    public function dCGetText($domain, $msgid, $category)
+    public static function dCGetText($domain, $msgid, $category)
     {
-        $l10n = $this->getReader($domain, $category);
+        $l10n = static::getReader($domain, $category);
 
-        return $this->encode($l10n->translate($msgid), $domain);
+        return static::encode($l10n->translate($msgid), $domain);
     }
 
     /**
@@ -445,11 +435,11 @@ class Gettext
      * @param  int    $category 
      * @return string
      */
-    public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
+    public static function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
     {
-        $l10n = $this->getReader($domain, $category);
+        $l10n = static::getReader($domain, $category);
 
-        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
+        return static::encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     /**
@@ -459,11 +449,11 @@ class Gettext
      * @param  string $msgid
      * @return string
      */
-    public function pGetText($context, $msgid)
+    public static function pGetText($context, $msgid)
     {
-        $l10n = $this->getReader();
+        $l10n = static::getReader();
 
-        return $this->encode($l10n->pgettext($context, $msgid));
+        return static::encode($l10n->pgettext($context, $msgid));
     }
 
     /**
@@ -474,11 +464,11 @@ class Gettext
      * @param  string $msgid 
      * @return string        
      */
-    public function dPGetText($domain, $context, $msgid)
+    public static function dPGetText($domain, $context, $msgid)
     {
-        $l10n = $this->getReader($domain);
+        $l10n = static::getReader($domain);
 
-        return $this->encode($l10n->pgettext($context, $msgid), $domain);
+        return static::encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     /**
@@ -490,11 +480,11 @@ class Gettext
      * @param  int    $category 
      * @return string
      */
-    public function dCPGetText($domain, $context, $msgid, $category)
+    public static function dCPGetText($domain, $context, $msgid, $category)
     {
-        $l10n = $this->getReader($domain, $category);
+        $l10n = static::getReader($domain, $category);
 
-        return $this->encode($l10n->pgettext($context, $msgid), $domain);
+        return static::encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     /**
@@ -506,11 +496,11 @@ class Gettext
      * @param  int    $n      
      * @return string
      */
-    public function nPGetText($context, $msgid1, $msgid2, $n)
+    public static function nPGetText($context, $msgid1, $msgid2, $n)
     {
-        $l10n = $this->getReader();
+        $l10n = static::getReader();
 
-        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
     }
 
     /**
@@ -523,11 +513,11 @@ class Gettext
      * @param  int    $n      
      * @return string
      */
-    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
+    public static function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
     {
-        $l10n = $this->getReader($domain);
+        $l10n = static::getReader($domain);
 
-        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
+        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     /**
@@ -541,11 +531,11 @@ class Gettext
      * @param  int    $category 
      * @return string
      */
-    public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
+    public static function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
     {
-        $l10n = $this->getReader($domain, $category);
+        $l10n = static::getReader($domain, $category);
 
-        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
+        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     /**
@@ -554,10 +544,10 @@ class Gettext
      * @param  int $category
      * @return string
      */
-    protected function checkCategory($category)
+    protected static function checkCategory($category)
     {
-        if (in_array($category, array_keys($this->lcCategories))) {
-            return $this->lcCategories[$category];
+        if (in_array($category, array_keys(static::$lcCategories))) {
+            return static::$lcCategories[$category];
         }
 
         return 'LC_ALL';

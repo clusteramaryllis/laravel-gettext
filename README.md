@@ -10,7 +10,7 @@ Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "1.1.x"
+    "clusteramaryllis/gettext": "2.0.x"
 }
 ```
 
@@ -25,6 +25,17 @@ And run `composer update`. Once finished, register via service provider in `conf
     // ...
 
     Clusteramaryllis\Gettext\GettextServiceProvider::class,
+
+]
+```
+
+You can also provide static syntax via facade in the `aliases` array:
+```php
+'aliases' => [
+
+    // ...
+
+    'Gettext' => Clusteramaryllis\Gettext\Facades\Gettext::class,
 
 ]
 ```

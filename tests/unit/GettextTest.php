@@ -1,6 +1,8 @@
 <?php
 
-class GettextTest extends Orchestra\Testbench\TestCase
+use Clusteramaryllis\Gettext\Gettext;
+
+class GettextTest extends PHPUnit_Framework_TestCase
 {
     protected $gettext;
 
@@ -8,33 +10,30 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        bindtextdomain('firstdomain', __DIR__."/../locale");
-        bindtextdomain('seconddomain', __DIR__."/../locale");
+        $this->gettext = new Gettext();
 
-        set_locale(LC_ALL, 'en_US.UTF-8');
-    }
+        $this->gettext->bindTextDomain('firstdomain', __DIR__."/../locale");
+        $this->gettext->bindTextDomain('seconddomain', __DIR__."/../locale");
 
-    public function getPackageProviders($app)
-    {
-        return ['Clusteramaryllis\Gettext\GettextServiceProvider'];
+        $this->gettext->setLocale(LC_ALL, 'en_US.UTF-8');
     }
 
     public function testGetText()
     {
         $this->assertEquals("Welcome to first domain", _("Welcome to first domain"));
 
-        textdomain('seconddomain');
+        $this->gettext->textDomain('seconddomain');
 
         $this->assertEquals(
             "Welcome to first domain !", 
-            gettext("Welcome to first domain")
+            $this->gettext->getText("Welcome to first domain")
         );
 
-        set_locale(LC_ALL, 'id_ID.UTF-8');
+        $this->gettext->setLocale(LC_ALL, 'id_ID.UTF-8');
 
         $this->assertEquals(
             "Selamat datang di domain pertama", 
-            gettext("Welcome to first domain")
+            $this->gettext->getText("Welcome to first domain")
         );
     }
 
@@ -42,37 +41,37 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         $this->assertEquals(
             "Welcome to first domain", 
-            dgettext("firstdomain", "Welcome to first domain")
+            $this->gettext->dGetText("firstdomain", "Welcome to first domain")
         );
     }
 
     public function testNGetText()
     {
-        $this->assertEquals("pig", ngettext("pig", "pigs", 1));
-        $this->assertEquals("pigs", ngettext("pig", "pigs", 2));
+        $this->assertEquals("pig", $this->gettext->nGetText("pig", "pigs", 1));
+        $this->assertEquals("pigs", $this->gettext->nGetText("pig", "pigs", 2));
     }
 
     public function testPGetText()
     {
-        set_locale(LC_ALL, 'id_ID.UTF-8');
+        $this->gettext->setLocale(LC_ALL, 'id_ID.UTF-8');
 
-        textdomain('seconddomain');
+        $this->gettext->textDomain('seconddomain');
 
-        $this->assertEquals("rindu", pgettext("yearn", "miss"));
-        $this->assertEquals("luput", pgettext("mishit", "miss"));
+        $this->assertEquals("rindu", $this->gettext->pGetText("yearn", "miss"));
+        $this->assertEquals("luput", $this->gettext->pGetText("mishit", "miss"));
     }
 
     public function testNPGetText()
     {
-        textdomain('seconddomain');
+        $this->gettext->textDomain('seconddomain');
 
         $this->assertEquals(
             "mouses", 
-            npgettext("device", "mouse", "mouses", 2)
+            $this->gettext->nPGetText("device", "mouse", "mouses", 2)
         );
         $this->assertEquals(
             "mice", 
-            npgettext("animal", "mouse", "mice", 2)
+            $this->gettext->nPGetText("animal", "mouse", "mice", 2)
         );   
     }
 
@@ -80,7 +79,7 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         $this->assertEquals(
             "Welcome to first domain !",
-            dcgettext("seconddomain", "Welcome to first domain", LC_MESSAGES)
+            $this->gettext->dCGetText("seconddomain", "Welcome to first domain", LC_MESSAGES)
         );
     }
 
@@ -88,11 +87,11 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         $this->assertEquals(
             "pig", 
-            dngettext("firstdomain", "pig", "pigs", 1)
+            $this->gettext->dNGetText("firstdomain", "pig", "pigs", 1)
         );
         $this->assertEquals(
             "pigs", 
-            dngettext("firstdomain", "pig", "pigs", 2)
+            $this->gettext->dNGetText("firstdomain", "pig", "pigs", 2)
         );
     }
 
@@ -100,31 +99,31 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         $this->assertEquals(
             "pig", 
-            dcngettext("firstdomain", "pig", "pigs", 1, LC_MESSAGES)
+            $this->gettext->dCNGetText("firstdomain", "pig", "pigs", 1, LC_MESSAGES)
         );
         $this->assertEquals(
             "pigs", 
-            dcngettext("firstdomain", "pig", "pigs", 2, LC_MESSAGES)
+            $this->gettext->dCNGetText("firstdomain", "pig", "pigs", 2, LC_MESSAGES)
         );
     }
 
     public function testDPGetText()
     {
-        set_locale(LC_ALL, 'id_ID.UTF-8');
+        $this->gettext->setLocale(LC_ALL, 'id_ID.UTF-8');
 
-        $this->assertEquals("rindu", dpgettext("seconddomain", "yearn", "miss"));
-        $this->assertEquals("luput", dpgettext("seconddomain", "mishit", "miss"));
+        $this->assertEquals("rindu", $this->gettext->dPGetText("seconddomain", "yearn", "miss"));
+        $this->assertEquals("luput", $this->gettext->dPGetText("seconddomain", "mishit", "miss"));
     }
 
     public function testDNPGetText()
     {
         $this->assertEquals(
             "mouses", 
-            dnpgettext("seconddomain", "device", "mouse", "mouses", 2)
+            $this->gettext->dNPGetText("seconddomain", "device", "mouse", "mouses", 2)
         );
         $this->assertEquals(
             "mice", 
-            dnpgettext("seconddomain", "animal", "mouse", "mice", 2)
+            $this->gettext->dNPGetText("seconddomain", "animal", "mouse", "mice", 2)
         );   
     }
 
@@ -132,11 +131,11 @@ class GettextTest extends Orchestra\Testbench\TestCase
     {
         $this->assertEquals(
             "mouses", 
-            dcnpgettext("seconddomain", "device", "mouse", "mouses", 2, LC_MESSAGES)
+            $this->gettext->dCNPGetText("seconddomain", "device", "mouse", "mouses", 2, LC_MESSAGES)
         );
         $this->assertEquals(
             "mice", 
-            dcnpgettext("seconddomain", "animal", "mouse", "mice", 2, LC_MESSAGES)
+            $this->gettext->dCNPGetText("seconddomain", "animal", "mouse", "mice", 2, LC_MESSAGES)
         );   
     }
 }

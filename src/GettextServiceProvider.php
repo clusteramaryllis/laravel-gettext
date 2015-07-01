@@ -28,7 +28,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerRepository();
+        $this->registerGettext();
         $this->registerGenerator();
     }
 
@@ -38,7 +38,7 @@ class GettextServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'gettext.repository',
+            'gettext',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
@@ -73,14 +73,14 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register repository.
+     * Register gettext.
      *
      * @return void
      */
-    protected function registerRepository()
+    protected function registerGettext()
     {
-        $this->app->singleton('gettext.repository', function ($app) {
-            return new Repositories\Gettext();
+        $this->app->singleton('gettext', function ($app) {
+            return new Gettext();
         });
     }
 
