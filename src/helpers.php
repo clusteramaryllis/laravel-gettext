@@ -1,6 +1,6 @@
 <?php
 
-use Clusteramaryllis\Gettext\Facade\Gettext;
+use Clusteramaryllis\Gettext\Facades\Gettext;
 
 if (! function_exists('_setlocale')) {
     /**
