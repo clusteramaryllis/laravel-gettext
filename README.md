@@ -29,17 +29,6 @@ And run `composer update`. Once finished, register via service provider in `conf
 ]
 ```
 
-You can also provide static syntax via facade in the `aliases` array:
-```php
-'aliases' => [
-
-    // ...
-
-    'Gettext' => Clusteramaryllis\Gettext\Facades\Gettext::class,
-
-]
-```
-
 Publish the configuration file (optional) (will create on `config/gettext.php`) :
 
 ```bash
@@ -110,37 +99,16 @@ the table with the scanned strings. After that, you can start begin translating.
 ```php
 Route::get('/', function() {
 
-    Gettext::bindTextDomain('messages', base_path('resources/locale'));
-    Gettext::textDomain('messages');
+    _bindtextdomain('messages', base_path('resources/locale'));
+    _textdomain('messages');
 
-    Gettext::setLocale(LC_ALL, 'sv_SE.utf-8');
+    _setlocale(LC_ALL, 'sv_SE.utf-8');
 
     return view('welcome');
 });
 ```
 
-**Available methods**
-
-Methods | Helper shortcut
-------- | ---------------
-Gettext::setLocale | _setlocale
-Gettext::bindTextDomain | _bindtextdomain
-Gettext::bindTextDomainCodeset | _bind_text_domain_codeset
-Gettext::textDomain | _textdomain
-Gettext::getText | __
-Gettext::nGetText | _n
-Gettext::dGetText | _d
-Gettext::dNGetText | _dn
-Gettext::dCGetText | _dc
-Gettext::dCNGetText | _dcn
-Gettext::pGetText | _p
-Gettext::dPGetText | _dp
-Gettext::dCPGetText | _dcp
-Gettext::nPGetText | _np
-Gettext::dNPGetText | _dnp
-Gettext::dCNPGetText | _dcnp
-
-More detailed method & their parameters can be seen [here](https://github.com/clusteramaryllis/laravel-gettext/blob/master/src/Gettext.php).
+More detailed function & their parameters can be seen [here](https://github.com/clusteramaryllis/laravel-gettext/blob/master/src/helpers.php).
 
 ### Acknowledgements
 

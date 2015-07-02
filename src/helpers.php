@@ -1,7 +1,5 @@
 <?php
 
-use Clusteramaryllis\Gettext\Facades\Gettext;
-
 if (! function_exists('_setlocale')) {
     /**
      * Set a requested locale.
@@ -11,7 +9,7 @@ if (! function_exists('_setlocale')) {
      */
     function _setlocale($category)
     {
-        return call_user_func_array(Gettext::class.'::setLocale', func_get_args());
+        return call_user_func_array([app('gettext'), '::setLocale'], func_get_args());
     }
 }
 
@@ -25,7 +23,7 @@ if (! function_exists('_bindtextdomain')) {
      */
     function _bindtextdomain($domain, $path)
     {
-        return Gettext::bindTextDomain($domain, $path);
+        return app('gettext')->bindTextDomain($domain, $path);
     }
 }
 
@@ -40,7 +38,7 @@ if (! function_exists('_bind_textdomain_codeset')) {
      */
     function _bind_textdomain_codeset($domain, $codeset)
     {
-        return Gettext::bindTextDomainCodeset($domain, $codeset);
+        return app('gettext')->bindTextDomainCodeset($domain, $codeset);
     }
 }
 
@@ -53,7 +51,7 @@ if (! function_exists('_textdomain')) {
      */
     function _textdomain($domain = null)
     {
-        return Gettext::textDomain($domain);
+        return app('gettext')->textDomain($domain);
     }
 }
 
@@ -66,7 +64,7 @@ if (! function_exists('__')) {
      */
     function __($msgid)
     {
-        return Gettext::getText($msgid);
+        return app('gettext')->getText($msgid);
     }
 }
 
@@ -81,7 +79,7 @@ if (! function_exists('_n')) {
      */
     function _n($msgid1, $msgid2, $n)
     {
-        return Gettext::nGetText($msgid1, $msgid2, $n);
+        return app('gettext')->nGetText($msgid1, $msgid2, $n);
     }
 }
 
@@ -95,7 +93,7 @@ if (! function_exists('_d')) {
      */
     function _d($domain, $msgid)
     {
-        return Gettext::dGetText($domain, $msgid);
+        return app('gettext')->dGetText($domain, $msgid);
     }
 }
 
@@ -111,7 +109,7 @@ if (! function_exists('_dn')) {
      */
     function _dn($domain, $msgid1, $msgid2, $n)
     {
-        return Gettext::dNGetText($domain, $msgid1, $msgid2, $n);
+        return app('gettext')->dNGetText($domain, $msgid1, $msgid2, $n);
     }
 }
 
@@ -126,7 +124,7 @@ if (! function_exists('_dc')) {
      */
     function _dc($domain, $msgid, $category)
     {
-        return Gettext::dCGetText($domain, $msgid, $category);
+        return app('gettext')->dCGetText($domain, $msgid, $category);
     }
 }
 
@@ -143,7 +141,7 @@ if (! function_exists('_dcn')) {
      */
     function _dcn($domain, $msgid1, $msgid2, $n, $category)
     {
-        return Gettext::dCNGetText($domain, $msgid1, $msgid2, $n, $category);
+        return app('gettext')->dCNGetText($domain, $msgid1, $msgid2, $n, $category);
     }
 }
 
@@ -157,7 +155,7 @@ if (! function_exists('_p')) {
      */
     function _p($context, $msgid)
     {
-        return Gettext::pGetText($context, $msgid);
+        return app('gettext')->pGetText($context, $msgid);
     }
 }
 
@@ -172,7 +170,7 @@ if (! function_exists('_dp')) {
      */
     function _dp($domain, $context, $msgid)
     {
-        return Gettext::dPGetText($domain, $context, $msgid);
+        return app('gettext')->dPGetText($domain, $context, $msgid);
     }
 }
 
@@ -188,7 +186,7 @@ if (! function_exists('_dcp')) {
      */
     function _dcp($domain, $context, $msgid, $category)
     {
-        return Gettext::dCPGetText($domain, $context, $msgid, $category);
+        return app('gettext')->dCPGetText($domain, $context, $msgid, $category);
     }
 }
 
@@ -204,7 +202,7 @@ if (! function_exists('_np')) {
      */
     function _np($context, $msgid1, $msgid2, $n)
     {
-        return Gettext::nPGetText($context, $msgid1, $msgid2, $n);
+        return app('gettext')->nPGetText($context, $msgid1, $msgid2, $n);
     }
 }
 
@@ -221,7 +219,7 @@ if (! function_exists('_dnp')) {
      */
     function _dnp($domain, $context, $msgid1, $msgid2, $n)
     {
-        return Gettext::dNPGetText($domain, $context, $msgid1, $msgid2, $n);
+        return app('gettext')->dNPGetText($domain, $context, $msgid1, $msgid2, $n);
     }
 }
 
@@ -239,6 +237,6 @@ if (! function_exists('_dcnp')) {
      */
     function _dcnp($domain, $context, $msgid1, $msgid2, $n, $category)
     {
-        return Gettext::dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
+        return app('gettext')->dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
     }
 }
