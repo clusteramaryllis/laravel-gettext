@@ -2,46 +2,48 @@
 
 namespace Clusteramaryllis\Gettext\Driver;
 
+use Closure;
 use FileReader;
 use gettext_reader;
 use InvalidArgumentException;
+use Clusteramaryllis\Gettext\Contracts\GettextApi as GettextApiContract;
 
-class GettextApi
+class GettextApi implements GettextApiContract
 {
     /**
      * Emulate non-native php-gettext or not.
      * 
-     * @var boolean
+     * @var bool
      */
-    protected static $emulateGettext = false;
+    protected $emulateGettext = false;
 
     /**
      * Text domains.
      * 
      * @var array
      */
-    protected static $textDomains = [];
+    protected $textDomains = [];
 
     /**
      * Default domain.
      * 
      * @var string
      */
-    protected static $defaultDomain = 'messages';
+    protected $defaultDomain = 'messages';
 
     /**
      * Current locale.
      * 
      * @var string
      */
-    protected static $currentLocale = '';
+    protected $currentLocale = '';
 
     /**
      * LC categories.
      * 
      * @var array
      */
-    protected static $lcCategories = [
+    protected $lcCategories = [
         'LC_CTYPE',
         'LC_NUMERIC',
         'LC_TIME',
@@ -52,14 +54,26 @@ class GettextApi
     ];
 
     /**
-     * Figure out all possible locale names and start with the most
-     * specific ones.  I.e. for sr_CS.UTF-8@latin, look through all of
-     * sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
+     * Forced to use GettextApi or not.
      * 
-     * @param  string $locale
-     * @return string
+     * @var bool
      */
-    public static function getLocalesList($locale)
+    protected $rule = false;
+
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        defined('LC_MESSAGES') || define('LC_MESSAGES', 5);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLocalesList($locale)
     {
         $localeNames = [];
         $pattern = "/^(?P<lang>[a-z]{2,3})"
@@ -109,29 +123,24 @@ class GettextApi
     }
 
     /**
-     * Get a StreamReader for the given text domain.
-     * 
-     * @param  string|null $domain
-     * @param  int         $category
-     * @param  bool        $cache
-     * @return \gettext_reader
+     * {@inheritDoc}
      */
-    public static function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
+    public function getReader($domain = null, $category = LC_MESSAGES, $cache = true)
     {
         if (! is_string($domain) || $domain === '') {
-            $domain = static::$defaultDomain;
+            $domain = $this->defaultDomain;
         }
 
-        if (! array_key_exists($domain, static::$textDomains)) {
-            static::$textDomains[$domain] = [];
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
         }
 
-        if (! array_key_exists('l10n', static::$textDomains[$domain])) {
-            $locale = static::setLocale(LC_MESSAGES, 0);
-            $boundPath = array_key_exists('path', static::$textDomains[$domain]) ?
-                static::$textDomains[$domain]['path'] : './';
-            $subPath = static::$lcCategories[$category]."/{$domain}.mo";
-            $localeNames = static::getLocalesList($locale);
+        if (! array_key_exists('l10n', $this->textDomains[$domain])) {
+            $locale = $this->setLocale(LC_MESSAGES, 0);
+            $boundPath = array_key_exists('path', $this->textDomains[$domain]) ?
+                $this->textDomains[$domain]['path'] : './';
+            $subPath = $this->lcCategories[$category]."/{$domain}.mo";
+            $localeNames = $this->getLocalesList($locale);
             $input = null;
 
             foreach ($localeNames as $locale) {
@@ -144,36 +153,31 @@ class GettextApi
                 }
             }
 
-            static::$textDomains[$domain]['l10n'] = new gettext_reader($input, $cache);
+            $this->textDomains[$domain]['l10n'] = new gettext_reader($input, $cache);
         }
 
-        return static::$textDomains[$domain]['l10n'];
+        return $this->textDomains[$domain]['l10n'];
     }
 
     /**
-     * Return whether we are using our emulated gettext API or PHP built-in one.
-     * 
-     * @return bool
+     * {@inheritDoc}
      */
-    public static function getEmulateGettext()
+    public function getEmulateGettext()
     {
-        return static::$emulateGettext;
+        return $this->emulateGettext;
     }
 
     /**
-     * Get the codeset for the given domain.
-     * 
-     * @param  string|null $domain
-     * @return string
+     * {@inheritDoc}
      */
-    public static function getCodeset($domain = null)
+    public function getCodeset($domain = null)
     {
         if (! is_string($domain) || $domain === '') {
-            $domain = static::$defaultDomain;
+            $domain = $this->defaultDomain;
         }
 
-        if (array_key_exists('codeset', static::$textDomains[$domain])) {
-            return static::$textDomains[$domain]['codeset'];
+        if (array_key_exists('codeset', $this->textDomains[$domain])) {
+            return $this->textDomains[$domain]['codeset'];
         }
 
         if (@ini_get('mbstring.internal_encoding')) {
@@ -184,13 +188,9 @@ class GettextApi
     }
 
     /**
-     * Return passed in $locale, or environment variable if $locale == ''.
-     * 
-     * @param  string $locale
-     * @param  string $category
-     * @return string
+     * {@inheritDoc}
      */
-    public static function getDefaultLocale($locale, $category = "LC_ALL")
+    public function getDefaultLocale($locale, $category = "LC_ALL")
     {
         if (! is_string($locale) || $locale === '') {
             if (@getenv('LANG')) {
@@ -210,27 +210,21 @@ class GettextApi
     }
 
     /**
-     * Check if the current locale is supported on this system.
-     * 
-     * @param  string|null $func
-     * @return bool
+     * {@inheritDoc}
      */
-    public static function hasLocaleAndFunction($func = null)
+    public function hasLocaleAndFunction($func = null)
     {
-        if ($func && function_exists($func)) {
+        if ($func && ! function_exists($func)) {
             return false;
         }
 
-        return ! static::$emulateGettext;
+        return ! $this->emulateGettext;
     }
 
     /**
-     * Set a requested locale, if needed emulates it.
-     * 
-     * @param  mixed $category
-     * @return string
+     * {@inheritDoc}
      */
-    public static function setLocale($category)
+    public function setLocale($category)
     {
         $argsCount = func_num_args();
 
@@ -240,17 +234,17 @@ class GettextApi
             );
         }
 
-        $strCategory = static::checkCategory($category);
+        $strCategory = $this->checkCategory($category);
         $preLocales  = func_get_args();
 
         array_shift($preLocales);
 
         if (! is_array($preLocales[0]) && $preLocales[0] === 0) {
-            if (static::$currentLocale === '') {
-                return static::setLocale($category, static::$currentLocale);
+            if ($this->currentLocale === '') {
+                return $this->setLocale($category, $this->currentLocale);
             }
 
-            return static::$currentLocale;
+            return $this->currentLocale;
         }
 
         if (is_array($preLocales[0])) {
@@ -261,35 +255,31 @@ class GettextApi
 
         $result = setlocale($category, $locales);
 
-        if (! $result) {
+        if (! $result || ! $this->rule) {
             @putenv("{$strCategory}={$locales[0]}");
             @putenv("LANG={$locales[0]}");
             @putenv("LANGUAGE={$locales[0]}");
 
-            static::$currentLocale = static::getDefaultLocale($result, $category);
-            static::$emulateGettext = true;
+            $this->currentLocale = $this->getDefaultLocale('', $category);
+            $this->emulateGettext = true;
         } else {
-            static::$currentLocale = $result;
-            static::$emulateGettext = false;
+            $this->currentLocale = $result;
+            $this->emulateGettext = false;
         }
 
-        if (array_key_exists(static::$defaultDomain, static::$textDomains)) {
-            unset(static::$textDomains[static::$defaultDomain]['l10n']);
+        if (array_key_exists($this->defaultDomain, $this->textDomains)) {
+            unset($this->textDomains[$this->defaultDomain]['l10n']);
         }
 
-        return static::$currentLocale;
+        return $this->currentLocale;
     }
 
     /**
-     * Convert the given string to the encoding set by bind_textdomain_codeset.
-     * 
-     * @param  string      $text
-     * @param  string|null $domain
-     * @return string
+     * {@inheritDoc}
      */
-    public static function encode($text, $domain = null)
+    public function encode($text, $domain = null)
     {
-        $targetEncoding = static::getCodeset($domain);
+        $targetEncoding = $this->getCodeset($domain);
 
         if (function_exists('mb_detect_encoding')) {
             $sourceEncoding = mb_detect_encoding($text);
@@ -303,251 +293,180 @@ class GettextApi
     }
 
     /**
-     * Set the path for a domain.
-     * 
-     * @param  string $domain
-     * @param  string $path
-     * @return string
+     * {@inheritDoc}
      */
-    public static function bindTextDomain($domain, $path)
+    public function bindTextDomain($domain, $path)
     {
         $path = rtrim($path, "/\\")."/";
 
-        if (! array_key_exists($domain, static::$textDomains)) {
-            static::$textDomains[$domain] = [];
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
         }
 
-        return static::$textDomains[$domain]['path'] = $path;
+        return $this->textDomains[$domain]['path'] = $path;
     }
 
     /**
-     * Specify the character encoding in which the messages 
-     * from the DOMAIN message catalog will be returned.
-     * 
-     * @param  string $domain  
-     * @param  string $codeset 
-     * @return string          
+     * {@inheritDoc}
      */
-    public static function bindTextDomainCodeset($domain, $codeset)
+    public function bindTextDomainCodeset($domain, $codeset)
     {
-        if (! array_key_exists($domain, static::$textDomains)) {
-            static::$textDomains[$domain] = [];
+        if (! array_key_exists($domain, $this->textDomains)) {
+            $this->textDomains[$domain] = [];
         }
 
-        return static::$textDomains[$domain]['codeset'] = $codeset;
+        return $this->textDomains[$domain]['codeset'] = $codeset;
     }
 
     /**
-     * Set the default domain.
-     * 
-     * @param  string|null $domain
-     * @return string         
+     * {@inheritDoc}
      */
-    public static function textDomain($domain = null)
+    public function textDomain($domain = null)
     {
         if (is_string($domain) && $domain !== '') {
-            return static::$defaultDomain = $domain;
+            return $this->defaultDomain = $domain;
         }
 
-        return static::$defaultDomain;
+        return $this->defaultDomain;
     }
 
     /**
-     * Lookup a message in the current domain.
-     * 
-     * @param  string $msgid
-     * @return string        
+     * {@inheritDoc}
      */
-    public static function getText($msgid)
+    public function getText($msgid)
     {
-        $l10n = static::getReader();
+        $l10n = $this->getReader();
 
-        return static::encode($l10n->translate($msgid));
+        return $this->encode($l10n->translate($msgid));
     }
 
     /**
-     * Plural version of gettext.
-     * 
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @return string
+     * {@inheritDoc}
      */
-    public static function nGetText($msgid1, $msgid2, $n)
+    public function nGetText($msgid1, $msgid2, $n)
     {
-        $l10n = static::getReader();
+        $l10n = $this->getReader();
 
-        return static::encode($l10n->ngettext($msgid1, $msgid2, $n));
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n));
     }
 
     /**
-     * Override the current domain.
-     * 
-     * @param  string $domain
-     * @param  string $msgid 
-     * @return string        
+     * {@inheritDoc}
      */
-    public static function dGetText($domain, $msgid)
+    public function dGetText($domain, $msgid)
     {
-        $l10n = static::getReader($domain);
+        $l10n = $this->getReader($domain);
 
-        return static::encode($l10n->translate($msgid), $domain);
+        return $this->encode($l10n->translate($msgid), $domain);
     }
 
     /**
-     * Plural version of dgettext.
-     * 
-     * @param  string $domain
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dNGetText($domain, $msgid1, $msgid2, $n)
+    public function dNGetText($domain, $msgid1, $msgid2, $n)
     {
-        $l10n = static::getReader($domain);
+        $l10n = $this->getReader($domain);
 
-        return static::encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     /**
-     * Override the domain for a single lookup.
-     * 
-     * @param  string $domain   
-     * @param  string $msgid    
-     * @param  int    $category 
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dCGetText($domain, $msgid, $category)
+    public function dCGetText($domain, $msgid, $category)
     {
-        $l10n = static::getReader($domain, $category);
+        $l10n = $this->getReader($domain, $category);
 
-        return static::encode($l10n->translate($msgid), $domain);
+        return $this->encode($l10n->translate($msgid), $domain);
     }
 
     /**
-     * Plural version of dcgettext.
-     * 
-     * @param  string $domain
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @param  int    $category 
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
+    public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
     {
-        $l10n = static::getReader($domain, $category);
+        $l10n = $this->getReader($domain, $category);
 
-        return static::encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
+        return $this->encode($l10n->ngettext($msgid1, $msgid2, $n), $domain);
     }
 
     /**
-     * Context version of gettext.
-     * 
-     * @param  string $context
-     * @param  string $msgid
-     * @return string
+     * {@inheritDoc}
      */
-    public static function pGetText($context, $msgid)
+    public function pGetText($context, $msgid)
     {
-        $l10n = static::getReader();
+        $l10n = $this->getReader();
 
-        return static::encode($l10n->pgettext($context, $msgid));
+        return $this->encode($l10n->pgettext($context, $msgid));
     }
 
     /**
-     * Override the current domain in a context gettext call.
-     * 
-     * @param  string $domain
-     * @param  string $context
-     * @param  string $msgid 
-     * @return string        
+     * {@inheritDoc}
      */
-    public static function dPGetText($domain, $context, $msgid)
+    public function dPGetText($domain, $context, $msgid)
     {
-        $l10n = static::getReader($domain);
+        $l10n = $this->getReader($domain);
 
-        return static::encode($l10n->pgettext($context, $msgid), $domain);
+        return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     /**
-     * Override the domain and category for a single context-based lookup.
-     * 
-     * @param  string $domain   
-     * @param  string $context
-     * @param  string $msgid    
-     * @param  int    $category 
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dCPGetText($domain, $context, $msgid, $category)
+    public function dCPGetText($domain, $context, $msgid, $category)
     {
-        $l10n = static::getReader($domain, $category);
+        $l10n = $this->getReader($domain, $category);
 
-        return static::encode($l10n->pgettext($context, $msgid), $domain);
+        return $this->encode($l10n->pgettext($context, $msgid), $domain);
     }
 
     /**
-     * Context version of ngettext.
-     * 
-     * @param  string $context
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @return string
+     * {@inheritDoc}
      */
-    public static function nPGetText($context, $msgid1, $msgid2, $n)
+    public function nPGetText($context, $msgid1, $msgid2, $n)
     {
-        $l10n = static::getReader();
+        $l10n = $this->getReader();
 
-        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n));
     }
 
     /**
-     * Override the current domain in a context ngettext call.
-     * 
-     * @param  string $domain
-     * @param  string $context
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
+    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
     {
-        $l10n = static::getReader($domain);
+        $l10n = $this->getReader($domain);
 
-        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     /**
-     * Override the domain and category for a plural context-based lookup.
-     * 
-     * @param  string $domain
-     * @param  string $context
-     * @param  string $msgid1 
-     * @param  string $msgid2 
-     * @param  int    $n      
-     * @param  int    $category 
-     * @return string
+     * {@inheritDoc}
      */
-    public static function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
+    public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
     {
-        $l10n = static::getReader($domain, $category);
+        $l10n = $this->getReader($domain, $category);
 
-        return static::encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
+        return $this->encode($l10n->npgettext($context, $msgid1, $msgid2, $n), $domain);
     }
 
     /**
-     * Determine the correct category.
-     * 
-     * @param  int $category
-     * @return string
+     * {@inheritDoc}
      */
-    protected static function checkCategory($category)
+    public function setForcedRule($rule)
     {
-        if (in_array($category, array_keys(static::$lcCategories))) {
-            return static::$lcCategories[$category];
+        $this->rule = ($rule instanceof Closure) ? $rule->__invoke() : $rule;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function checkCategory($category)
+    {
+        if (in_array($category, array_keys($this->lcCategories))) {
+            return $this->lcCategories[$category];
         }
 
         return 'LC_ALL';

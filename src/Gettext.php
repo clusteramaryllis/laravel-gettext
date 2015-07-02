@@ -2,8 +2,30 @@
 
 namespace Clusteramaryllis\Gettext;
 
+use Clusteramaryllis\Gettext\Driver\GettextApi;
+
 class Gettext
 {
+    /**
+     * GettextApi contracts.
+     * 
+     * @var \Clusteramaryllis\Gettext\Contracts\GettextApi
+     */
+    protected $api;
+
+    /**
+     * Constructor.
+     *
+     * @return void
+     */
+    public function __construct(GettextApi $api)
+    {
+        $this->api = $api;
+
+        // initiate to default
+        $this->setLocale(LC_MESSAGES, 0);
+    }
+
     /**
      * Set a requested locale, if needed emulates it.
      * 
@@ -12,7 +34,7 @@ class Gettext
      */
     public function setLocale($category)
     {
-        return call_user_func_array('set_locale', func_get_args());
+        return call_user_func_array([$this->api, 'setLocale'], func_get_args());
     }
 
     /**
@@ -24,7 +46,11 @@ class Gettext
      */
     public function bindTextDomain($domain, $path)
     {
-        return bindtextdomain($domain, $path);
+        if ($this->api->hasLocaleAndFunction('bindtextdomain')) {
+            return bindtextdomain($domain, $path);
+        }
+        
+        return $this->api->bindTextDomain($domain, $path);
     }
 
     /**
@@ -37,7 +63,11 @@ class Gettext
      */
     public function bindTextDomainCodeset($domain, $codeset)
     {
-        return bind_textdomain_codeset($domain, $codeset);
+        if ($this->api->hasLocaleAndFunction('bind_textdomain_codeset')) {
+            return bind_textdomain_codeset($domain, $codeset);
+        }
+
+        return $this->api->bindTextDomainCodeset($domain, $codeset);
     }
 
     /**
@@ -48,7 +78,11 @@ class Gettext
      */
     public function textDomain($domain = null)
     {
-        return textdomain($domain);
+        if ($this->api->hasLocaleAndFunction('textdomain')) {
+            return textdomain($domain);
+        }
+
+        return $this->api->textDomain($domain);
     }
 
     /**
@@ -59,7 +93,11 @@ class Gettext
      */
     public function getText($msgid)
     {
-        return gettext($msgid);
+        if ($this->api->hasLocaleAndFunction('gettext')) {
+            return gettext($msgid);
+        }
+
+        return $this->api->getText($msgid);
     }
 
     /**
@@ -72,7 +110,11 @@ class Gettext
      */
     public function nGetText($msgid1, $msgid2, $n)
     {
-        return ngettext($msgid1, $msgid2, $n);
+        if ($this->api->hasLocaleAndFunction('ngettext')) {
+            return ngettext($msgid1, $msgid2, $n);
+        }
+
+        return $this->api->nGetText($msgid1, $msgid2, $n);
     }
 
     /**
@@ -84,7 +126,11 @@ class Gettext
      */
     public function dGetText($domain, $msgid)
     {
-        return dgettext($domain, $msgid);
+        if ($this->api->hasLocaleAndFunction('dgettext')) {
+            return dgettext($domain, $msgid);
+        }
+
+        return $this->api->dGetText($domain, $msgid);
     }
 
     /**
@@ -98,7 +144,11 @@ class Gettext
      */
     public function dNGetText($domain, $msgid1, $msgid2, $n)
     {
-        return dngettext($domain, $msgid1, $msgid2, $n);
+        if ($this->api->hasLocaleAndFunction('dngettext')) {
+            return dngettext($domain, $msgid1, $msgid2, $n);
+        }
+
+        return $this->api->dNGetText($domain, $msgid1, $msgid2, $n);
     }
 
     /**
@@ -111,7 +161,11 @@ class Gettext
      */
     public function dCGetText($domain, $msgid, $category)
     {
-        return dcgettext($domain, $msgid, $category);
+        if ($this->api->hasLocaleAndFunction('dcgettext')) {
+            return dcgettext($domain, $msgid, $category);
+        }
+
+        return $this->api->dCGetText($domain, $msgid, $category);
     }
 
     /**
@@ -126,7 +180,11 @@ class Gettext
      */
     public function dCNGetText($domain, $msgid1, $msgid2, $n, $category)
     {
-        return dcngettext($domain, $msgid1, $msgid2, $n, $category);
+        if ($this->api->hasLocaleAndFunction('dcngettext')) {
+            return dcngettext($domain, $msgid1, $msgid2, $n, $category);
+        }
+
+        return $this->api->dCNGetText($domain, $msgid1, $msgid2, $n, $category);
     }
 
     /**
@@ -138,7 +196,18 @@ class Gettext
      */
     public function pGetText($context, $msgid)
     {
-        return pgettext($context, $msgid);
+        if ($this->api->hasLocaleAndFunction('gettext')) {
+            $context_id = "{$context}\004{$msgid}";
+            $translation = gettext($context_id);
+
+            if ($translation == $context_id) {
+                return $msgid;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->pGetText($context, $msgid);
     }
 
     /**
@@ -151,7 +220,18 @@ class Gettext
      */
     public function dPGetText($domain, $context, $msgid)
     {
-        return dpgettext($domain, $context, $msgid);
+        if ($this->api->hasLocaleAndFunction('dgettext')) {
+            $context_id = "{$context}\004{$msgid}";
+            $translation = dgettext($domain, $context_id);
+
+            if ($translation == $context_id) {
+                return $msgid;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->dPGetText($domain, $context, $msgid);
     }
 
     /**
@@ -165,7 +245,18 @@ class Gettext
      */
     public function dCPGetText($domain, $context, $msgid, $category)
     {
-        return dcpgettext($domain, $context, $msgid, $category);
+        if ($this->api->hasLocaleAndFunction('dcgettext')) {
+            $context_id = "{$context}\004{$msgid}";
+            $translation = dcgettext($domain, $context_id, $category);
+
+            if ($translation == $context_id) {
+                return $msgid;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->dCPGetText($domain, $context, $msgid, $category);
     }
 
     /**
@@ -179,7 +270,18 @@ class Gettext
      */
     public function nPGetText($context, $msgid1, $msgid2, $n)
     {
-        return npgettext($context, $msgid1, $msgid2, $n);
+        if ($this->api->hasLocaleAndFunction('ngettext')) {
+            $context_id = "{$context}\004{$msgid1}";
+            $translation = ngettext($context_id, $msgid2, $n);
+
+            if ($translation == $context_id || $translation == $msgid2) {
+                return $n == 1 ? $msgid1 : $msgid2;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->nPGetText($context, $msgid1, $msgid2, $n);
     }
 
     /**
@@ -194,7 +296,18 @@ class Gettext
      */
     public function dNPGetText($domain, $context, $msgid1, $msgid2, $n)
     {
-        return dnpgettext($domain, $context, $msgid1, $msgid2, $n);
+        if ($this->api->hasLocaleAndFunction('dngettext')) {
+            $context_id = "{$context}\004{$msgid1}";
+            $translation = dngettext($domain, $context_id, $msgid2, $n);
+
+            if ($translation == $context_id || $translation == $msgid2) {
+                return $n == 1 ? $msgid1 : $msgid2;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->dNPGetText($domain, $context, $msgid1, $msgid2, $n);
     }
 
     /**
@@ -210,6 +323,17 @@ class Gettext
      */
     public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category)
     {
-        return dcnpgettext($domain, $context, $msgid1, $msgid2, $n, $category);
+        if ($this->api->hasLocaleAndFunction('dcngettext')) {
+            $context_id = "{$context}\004{$msgid1}";
+            $translation = dcngettext($domain, $context_id, $msgid2, $n, $category);
+
+            if ($translation == $context_id || $translation == $msgid2) {
+                return $n == 1 ? $msgid1 : $msgid2;
+            }
+
+            return $translation;
+        }
+
+        return $this->api->dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
     }
 }

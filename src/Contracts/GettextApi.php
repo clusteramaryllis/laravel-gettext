@@ -1,21 +1,78 @@
-<?php
+<?php 
 
-use Clusteramaryllis\Gettext\Facade\Gettext;
+namespace Clusteramaryllis\Gettext\Contracts;
 
-if (! function_exists('_setlocale')) {
+interface GettextApi
+{
     /**
-     * Set a requested locale.
+     * Figure out all possible locale names and start with the most
+     * specific ones.  I.e. for sr_CS.UTF-8@latin, look through all of
+     * sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
+     * 
+     * @param  string $locale
+     * @return string
+     */
+    public function getLocalesList($locale);
+
+    /**
+     * Get a StreamReader for the given text domain.
+     * 
+     * @param  string|null $domain
+     * @param  int         $category
+     * @param  bool        $cache
+     * @return \gettext_reader
+     */
+    public function getReader($domain = null, $category = LC_MESSAGES, $cache = true);
+
+    /**
+     * Return whether we are using our emulated gettext API or PHP built-in one.
+     * 
+     * @return bool
+     */
+    public function getEmulateGettext();
+
+    /**
+     * Get the codeset for the given domain.
+     * 
+     * @param  string|null $domain
+     * @return string
+     */
+    public function getCodeset($domain = null);
+
+    /**
+     * Return passed in $locale, or environment variable if $locale == ''.
+     * 
+     * @param  string $locale
+     * @param  string $category
+     * @return string
+     */
+    public function getDefaultLocale($locale, $category = "LC_ALL");
+
+    /**
+     * Check if the current locale is supported on this system.
+     * 
+     * @param  callable|null $func
+     * @return bool
+     */
+    public function hasLocaleAndFunction($func = null);
+
+    /**
+     * Set a requested locale, if needed emulates it.
      * 
      * @param  mixed $category
      * @return string
      */
-    function _setlocale($category)
-    {
-        return call_user_func_array(Gettext::class.'::setLocale', func_get_args());
-    }
-}
+    public function setLocale($category);
 
-if (! function_exists('_bindtextdomain')) {
+    /**
+     * Convert the given string to the encoding set by bind_textdomain_codeset.
+     * 
+     * @param  string      $text
+     * @param  string|null $domain
+     * @return string
+     */
+    public function encode($text, $domain = null);
+
     /**
      * Set the path for a domain.
      * 
@@ -23,13 +80,8 @@ if (! function_exists('_bindtextdomain')) {
      * @param  string $path
      * @return string
      */
-    function _bindtextdomain($domain, $path)
-    {
-        return Gettext::bindTextDomain($domain, $path);
-    }
-}
+    public function bindTextDomain($domain, $path);
 
-if (! function_exists('_bind_textdomain_codeset')) {
     /**
      * Specify the character encoding in which the messages 
      * from the DOMAIN message catalog will be returned.
@@ -38,39 +90,24 @@ if (! function_exists('_bind_textdomain_codeset')) {
      * @param  string $codeset 
      * @return string          
      */
-    function _bind_textdomain_codeset($domain, $codeset)
-    {
-        return Gettext::bindTextDomainCodeset($domain, $codeset);
-    }
-}
+    public function bindTextDomainCodeset($domain, $codeset);
 
-if (! function_exists('_textdomain')) {
     /**
      * Set the default domain.
      * 
      * @param  string|null $domain
      * @return string         
      */
-    function _textdomain($domain = null)
-    {
-        return Gettext::textDomain($domain);
-    }
-}
+    public function textDomain($domain = null);
 
-if (! function_exists('__')) {
     /**
      * Lookup a message in the current domain.
      * 
      * @param  string $msgid
      * @return string        
      */
-    function __($msgid)
-    {
-        return Gettext::getText($msgid);
-    }
-}
+    public function getText($msgid);
 
-if (! function_exists('_n')) {
     /**
      * Plural version of gettext.
      * 
@@ -79,13 +116,8 @@ if (! function_exists('_n')) {
      * @param  int    $n      
      * @return string
      */
-    function _n($msgid1, $msgid2, $n)
-    {
-        return Gettext::nGetText($msgid1, $msgid2, $n);
-    }
-}
+    public function nGetText($msgid1, $msgid2, $n);
 
-if (! function_exists('_d')) {
     /**
      * Override the current domain.
      * 
@@ -93,13 +125,8 @@ if (! function_exists('_d')) {
      * @param  string $msgid 
      * @return string        
      */
-    function _d($domain, $msgid)
-    {
-        return Gettext::dGetText($domain, $msgid);
-    }
-}
+    public function dGetText($domain, $msgid);
 
-if (! function_exists('_dn')) {
     /**
      * Plural version of dgettext.
      * 
@@ -109,13 +136,8 @@ if (! function_exists('_dn')) {
      * @param  int    $n      
      * @return string
      */
-    function _dn($domain, $msgid1, $msgid2, $n)
-    {
-        return Gettext::dNGetText($domain, $msgid1, $msgid2, $n);
-    }
-}
+    public function dNGetText($domain, $msgid1, $msgid2, $n);
 
-if (! function_exists('_dc')) {
     /**
      * Override the domain for a single lookup.
      * 
@@ -124,13 +146,8 @@ if (! function_exists('_dc')) {
      * @param  int    $category 
      * @return string
      */
-    function _dc($domain, $msgid, $category)
-    {
-        return Gettext::dCGetText($domain, $msgid, $category);
-    }
-}
+    public function dCGetText($domain, $msgid, $category);
 
-if (! function_exists('_dcn')) {
     /**
      * Plural version of dcgettext.
      * 
@@ -141,13 +158,8 @@ if (! function_exists('_dcn')) {
      * @param  int    $category 
      * @return string
      */
-    function _dcn($domain, $msgid1, $msgid2, $n, $category)
-    {
-        return Gettext::dCNGetText($domain, $msgid1, $msgid2, $n, $category);
-    }
-}
+    public function dCNGetText($domain, $msgid1, $msgid2, $n, $category);
 
-if (! function_exists('_p')) {
     /**
      * Context version of gettext.
      * 
@@ -155,13 +167,8 @@ if (! function_exists('_p')) {
      * @param  string $msgid
      * @return string
      */
-    function _p($context, $msgid)
-    {
-        return Gettext::pGetText($context, $msgid);
-    }
-}
+    public function pGetText($context, $msgid);
 
-if (! function_exists('_dp')) {
     /**
      * Override the current domain in a context gettext call.
      * 
@@ -170,13 +177,8 @@ if (! function_exists('_dp')) {
      * @param  string $msgid 
      * @return string        
      */
-    function _dp($domain, $context, $msgid)
-    {
-        return Gettext::dPGetText($domain, $context, $msgid);
-    }
-}
+    public function dPGetText($domain, $context, $msgid);
 
-if (! function_exists('_dcp')) {
     /**
      * Override the domain and category for a single context-based lookup.
      * 
@@ -186,13 +188,8 @@ if (! function_exists('_dcp')) {
      * @param  int    $category 
      * @return string
      */
-    function _dcp($domain, $context, $msgid, $category)
-    {
-        return Gettext::dCPGetText($domain, $context, $msgid, $category);
-    }
-}
+    public function dCPGetText($domain, $context, $msgid, $category);
 
-if (! function_exists('_np')) {
     /**
      * Context version of ngettext.
      * 
@@ -202,13 +199,8 @@ if (! function_exists('_np')) {
      * @param  int    $n      
      * @return string
      */
-    function _np($context, $msgid1, $msgid2, $n)
-    {
-        return Gettext::nPGetText($context, $msgid1, $msgid2, $n);
-    }
-}
+    public function nPGetText($context, $msgid1, $msgid2, $n);
 
-if (! function_exists('_dnp')) {
     /**
      * Override the current domain in a context ngettext call.
      * 
@@ -219,13 +211,8 @@ if (! function_exists('_dnp')) {
      * @param  int    $n      
      * @return string
      */
-    function _dnp($domain, $context, $msgid1, $msgid2, $n)
-    {
-        return Gettext::dNPGetText($domain, $context, $msgid1, $msgid2, $n);
-    }
-}
+    public function dNPGetText($domain, $context, $msgid1, $msgid2, $n);
 
-if (! function_exists('_dcnp')) {
     /**
      * Override the domain and category for a plural context-based lookup.
      * 
@@ -237,8 +224,13 @@ if (! function_exists('_dcnp')) {
      * @param  int    $category 
      * @return string
      */
-    function _dcnp($domain, $context, $msgid1, $msgid2, $n, $category)
-    {
-        return Gettext::dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
-    }
+    public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
+
+    /**
+     * set Enforced Rule.
+     * 
+     * @param  bool|\Closure $rule
+     * @return $this 
+     */
+    public function setForcedRule($rule); 
 }

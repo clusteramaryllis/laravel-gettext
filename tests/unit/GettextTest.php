@@ -1,6 +1,7 @@
 <?php
 
 use Clusteramaryllis\Gettext\Gettext;
+use Clusteramaryllis\Gettext\Driver\GettextApi;
 
 class GettextTest extends PHPUnit_Framework_TestCase
 {
@@ -8,9 +9,11 @@ class GettextTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        parent::setUp();
+        include __DIR__.'/../config/config.php';
 
-        $this->gettext = new Gettext();
+        $this->gettext = new Gettext(
+            (new GettextApi())->setForcedRule($config['forced_rule'])
+        );
 
         $this->gettext->bindTextDomain('firstdomain', __DIR__."/../locale");
         $this->gettext->bindTextDomain('seconddomain', __DIR__."/../locale");
@@ -20,7 +23,10 @@ class GettextTest extends PHPUnit_Framework_TestCase
 
     public function testGetText()
     {
-        $this->assertEquals("Welcome to first domain", _("Welcome to first domain"));
+        $this->assertEquals(
+            "Welcome to first domain", 
+            $this->gettext->getText("Welcome to first domain")
+        );
 
         $this->gettext->textDomain('seconddomain');
 

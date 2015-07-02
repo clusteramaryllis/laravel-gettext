@@ -21,6 +21,10 @@ class GettextServiceProvider extends ServiceProvider
         $this->bootConfig();
         $this->bootCreateCommand();
         $this->bootUpdateCommand();
+
+        $this->app->make('gettext.api')->setForcedRule(
+            $this->app->make('config')->get('gettext.forced_rule')
+        );
     }
 
     /**
@@ -28,6 +32,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerApi();
         $this->registerGettext();
         $this->registerGenerator();
     }
@@ -39,6 +44,7 @@ class GettextServiceProvider extends ServiceProvider
     {
         return [
             'gettext',
+            'gettext.api',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
@@ -61,6 +67,20 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register gettext.
+     *
+     * @return void
+     */
+    protected function registerApi()
+    {
+        $this->app->singleton('gettext.api', function ($app) {
+            return new Driver\GettextApi();
+        });
+
+        $this->app->alias('gettext.api', 'Clusteramaryllis\Gettext\Contracts\GettextApi');
+    }
+
+    /**
      * Register generator.
      *
      * @return void
@@ -80,7 +100,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function registerGettext()
     {
         $this->app->singleton('gettext', function ($app) {
-            return new Gettext();
+            return new Gettext($app['gettext.api']);
         });
     }
 
