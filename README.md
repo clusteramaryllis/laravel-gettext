@@ -72,14 +72,14 @@ Once done, you can easily translate your application using tools such as PoEdit.
 
 **Simple usage**
 
-Prepare view with strings wrapped with Gettext method or helper
+1) Prepare `view` with strings wrapped with `Gettext` method or helper
 
 ```html
 <!-- resources\views\welcome.blade.php -->
 {!! __('Welcome to main page') !!}
 ``` 
 
-Add your language preferences via `config/gettext.php` on languages array
+2) Add your language preferences via `config/gettext.php` on languages array
 
 ```php
 languages => [
@@ -94,7 +94,7 @@ languages => [
 ]
 ```
 
-Run `php artisan gettext:create`. This will generate .po file in
+3) Run `php artisan gettext:create`. This will generate .po file in
 
 ```
 resources\locale\sv_SE\LC_MESSAGES\messages.po
@@ -102,10 +102,10 @@ resources\locale\sv_SE\LC_MESSAGES\messages.po
 
 & ready to scan translated string in `app\Http\Controllers` & `resources\views` (Default option).
 
-Open the .po file with PoEdit or any similar editors. In PoEdit you need to click update to populate
-the table with scanned strings. After that, you can start begin translating.
+4) Open the .po file with PoEdit or any similar editors. In PoEdit you need to click update to populate
+the table with the scanned strings. After that, you can start begin translating.
 
-Test via routes
+5) Simple routes test
 
 ```php
 Route::get('/', function() {
@@ -123,7 +123,7 @@ Route::get('/', function() {
 
 Methods | Helper shortcut
 ------- | ---------------
-Gettext::setLocale | _setLocale
+Gettext::setLocale | _setlocale
 Gettext::bindTextDomain | _bindtextdomain
 Gettext::bindTextDomainCodeset | _bind_text_domain_codeset
 Gettext::textDomain | _textdomain
@@ -140,7 +140,7 @@ Gettext::nPGetText | _np
 Gettext::dNPGetText | _dnp
 Gettext::dCNPGetText | _dcnp
 
-More detailed method can be seen [here](https://github.com/clusteramaryllis/laravel-gettext/blob/master/src/Gettext.php).
+More detailed method & their parameters can be seen [here](https://github.com/clusteramaryllis/laravel-gettext/blob/master/src/Gettext.php).
 
 ### Acknowledgements
 
