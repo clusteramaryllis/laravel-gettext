@@ -9,7 +9,7 @@ if (! function_exists('_setlocale')) {
      */
     function _setlocale($category)
     {
-        return call_user_func_array([app('gettext'), '::setLocale'], func_get_args());
+        return call_user_func_array([app('gettext'), 'setLocale'], func_get_args());
     }
 }
 
