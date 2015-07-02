@@ -461,7 +461,10 @@ class GettextApi implements GettextApiContract
     }
 
     /**
-     * {@inheritDoc}
+     * Determine the correct category.
+     * 
+     * @param  int $category
+     * @return string
      */
     protected function checkCategory($category)
     {

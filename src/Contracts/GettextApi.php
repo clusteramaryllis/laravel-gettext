@@ -227,7 +227,7 @@ interface GettextApi
     public function dCNPGetText($domain, $context, $msgid1, $msgid2, $n, $category);
 
     /**
-     * set Enforced Rule.
+     * Set forced rule.
      * 
      * @param  bool|\Closure $rule
      * @return $this 
