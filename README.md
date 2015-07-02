@@ -10,7 +10,7 @@ Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "2.0.x"
+    "clusteramaryllis/gettext": "dev-master"
 }
 ```
 
@@ -67,6 +67,80 @@ php artisan gettext:create --sources="app/Http/Controllers, resources/views" --d
 This will generate .po files in `resources/locale/en_US/LC_MESSAGES/messages.po` & will scan any string that utilize [php-gettext](http://php.net/manual/en/ref.gettext.php) function on `app/Http/Controllers` & `resources/views`
 
 Once done, you can easily translate your application using tools such as PoEdit.
+
+### How To
+
+**Simple usage**
+
+Prepare view with strings wrapped with Gettext method or helper
+
+```html
+<!-- resources\views\welcome.blade.php -->
+{!! __('Welcome to main page') !!}
+``` 
+
+Add your language preferences via `config/gettext.php` on languages array
+
+```php
+languages => [
+
+    // ...,
+
+    'sv' => [
+        'locale' => 'sv_SE',
+        'encoding' => 'utf-8',
+        'plural_forms' => "nplurals=2; plural=(n != 1);",
+    ]      
+]
+```
+
+Run `php artisan gettext:create`. This will generate .po file in
+
+```
+resources\locale\sv_SE\LC_MESSAGES\messages.po
+```
+
+& ready to scan translated string in `app\Http\Controllers` & `resources\views` (Default option).
+
+Open the .po file with PoEdit or any similar editors. In PoEdit you need to click update to populate
+the table with scanned strings. After that, you can start begin translating.
+
+Test via routes
+
+```php
+Route::get('/', function() {
+
+    Gettext::bindTextDomain('messages', base_path('resources/locale'));
+    Gettext::textDomain('messages');
+
+    Gettext::setLocale(LC_ALL, 'sv_SE.utf-8');
+
+    return view('welcome');
+});
+```
+
+**Available methods**
+
+Methods | Helper shortcut
+------- | ---------------
+Gettext::setLocale | _setLocale
+Gettext::bindTextDomain | _bindtextdomain
+Gettext::bindTextDomainCodeset | _bind_text_domain_codeset
+Gettext::textDomain | _textdomain
+Gettext::getText | __
+Gettext::nGetText | _n
+Gettext::dGetText | _d
+Gettext::dNGetText | _dn
+Gettext::dCGetText | _dc
+Gettext::dCNGetText | _dcn
+Gettext::pGetText | _p
+Gettext::dPGetText | _dp
+Gettext::dCPGetText | _dcp
+Gettext::nPGetText | _np
+Gettext::dNPGetText | _dnp
+Gettext::dCNPGetText | _dcnp
+
+More detailed method can be seen [here](https://github.com/clusteramaryllis/laravel-gettext/blob/master/src/Gettext.php).
 
 ### Acknowledgements
 
