@@ -1,7 +1,7 @@
-<?php 
+<?php
 
-echo _('Welcome to first domain'); 
-echo _('And second domain'); 
+echo _('Welcome to first domain');
+echo _('And second domain');
 echo pgettext('yearn', 'miss');
 echo pgettext('mishit', 'miss');
 echo npgettext('device', 'mouse', 'mouses', 1);

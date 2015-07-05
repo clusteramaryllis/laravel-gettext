@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Clusteramaryllis\Gettext;
 
@@ -22,8 +22,8 @@ class GettextServiceProvider extends ServiceProvider
         $this->bootCreateCommand();
         $this->bootUpdateCommand();
 
-        $this->app->make('gettext.api')->setForcedRule(
-            $this->app->make('config')->get('gettext.forced_rule')
+        $this->app->make('gettext.driver')->forceEmulator(
+            $this->app->make('config')->get('gettext.force_emulator')
         );
     }
 
@@ -32,7 +32,7 @@ class GettextServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerApi();
+        $this->registerDriver();
         $this->registerGettext();
         $this->registerGenerator();
     }
@@ -44,7 +44,7 @@ class GettextServiceProvider extends ServiceProvider
     {
         return [
             'gettext',
-            'gettext.api',
+            'gettext.driver',
             'gettext.generator',
             'gettext.config',
             'gettext.create',
@@ -67,17 +67,17 @@ class GettextServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register gettext.
+     * Register gettext driver.
      *
      * @return void
      */
-    protected function registerApi()
+    protected function registerDriver()
     {
-        $this->app->singleton('gettext.api', function ($app) {
-            return new Driver\GettextApi();
+        $this->app->singleton('gettext.driver', function ($app) {
+            return new Driver\GettextDriver();
         });
 
-        $this->app->alias('gettext.api', 'Clusteramaryllis\Gettext\Contracts\GettextApi');
+        $this->app->alias('gettext.driver', Contracts\GettextDriver::class);
     }
 
     /**
@@ -88,7 +88,8 @@ class GettextServiceProvider extends ServiceProvider
     protected function registerGenerator()
     {
         $this->app->singleton('gettext.generator', function ($app) {
-            return new Repositories\PoGenerator($app['files'], $app['path.base']);
+            return (new Repositories\PoGenerator($app['files'], $app['path.base']))
+                ->setResolvedName('gettext');
         });
     }
 
@@ -100,7 +101,7 @@ class GettextServiceProvider extends ServiceProvider
     protected function registerGettext()
     {
         $this->app->singleton('gettext', function ($app) {
-            return new Gettext($app['gettext.api']);
+            return new Gettext($app['gettext.driver']);
         });
     }
 

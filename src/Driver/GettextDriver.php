@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Clusteramaryllis\Gettext\Driver;
 
@@ -6,41 +6,48 @@ use Closure;
 use FileReader;
 use gettext_reader;
 use InvalidArgumentException;
-use Clusteramaryllis\Gettext\Contracts\GettextApi as GettextApiContract;
+use Clusteramaryllis\Gettext\Contracts\GettextDriver as GettextDriverContract;
 
-class GettextApi implements GettextApiContract
+class GettextDriver implements GettextDriverContract
 {
     /**
      * Emulate non-native php-gettext or not.
-     * 
+     *
      * @var bool
      */
     protected $emulateGettext = false;
 
     /**
+     * Force to use GettextDriver or not.
+     *
+     * @var bool
+     */
+    protected $rule = false;
+
+    /**
      * Text domains.
-     * 
+     *
      * @var array
      */
     protected $textDomains = [];
 
     /**
      * Default domain.
-     * 
+     *
      * @var string
      */
     protected $defaultDomain = 'messages';
 
     /**
      * Current locale.
-     * 
+     *
      * @var string
      */
     protected $currentLocale = '';
 
     /**
      * LC categories.
-     * 
+     *
      * @var array
      */
     protected $lcCategories = [
@@ -52,13 +59,6 @@ class GettextApi implements GettextApiContract
         'LC_MESSAGES',
         'LC_ALL',
     ];
-
-    /**
-     * Forced to use GettextApi or not.
-     * 
-     * @var bool
-     */
-    protected $rule = false;
 
     /**
      * Constructor.
@@ -212,6 +212,14 @@ class GettextApi implements GettextApiContract
     /**
      * {@inheritDoc}
      */
+    public function getCurrentLocale()
+    {
+        return $this->currentLocale;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function hasLocaleAndFunction($func = null)
     {
         if ($func && ! function_exists($func)) {
@@ -255,7 +263,7 @@ class GettextApi implements GettextApiContract
 
         $result = setlocale($category, $locales);
 
-        if (! $result || ! $this->rule) {
+        if (! $result || $this->rule) {
             @putenv("{$strCategory}={$locales[0]}");
             @putenv("LANG={$locales[0]}");
             @putenv("LANGUAGE={$locales[0]}");
@@ -453,16 +461,18 @@ class GettextApi implements GettextApiContract
     /**
      * {@inheritDoc}
      */
-    public function setForcedRule($rule)
+    public function forceEmulator($rule)
     {
         $this->rule = ($rule instanceof Closure) ? $rule->__invoke() : $rule;
+        // make sure to check again
+        $this->setLocale(LC_ALL, $this->currentLocale);
 
         return $this;
     }
 
     /**
      * Determine the correct category.
-     * 
+     *
      * @param  int $category
      * @return string
      */

@@ -18,7 +18,8 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
 
         $this->config    = $config;
         $this->files     = new Filesystem();
-        $this->generator = new PoGenerator($this->files, $this->config['base_path']);
+        $this->generator = (new PoGenerator($this->files, $this->config['base_path']))
+                                ->setResolvedName('gettext');
     }
 
     public function testStripPath()
@@ -40,7 +41,7 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
             $files = glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
 
             foreach ($files as $file) {
-                $contents = $this->files->get($file);
+                $contents = $this->generator->parseToken($this->files->get($file));
 
                 $this->assertEquals(
                     $compiler->compileString($contents),

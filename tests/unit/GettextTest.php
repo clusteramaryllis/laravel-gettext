@@ -1,7 +1,7 @@
 <?php
 
 use Clusteramaryllis\Gettext\Gettext;
-use Clusteramaryllis\Gettext\Driver\GettextApi;
+use Clusteramaryllis\Gettext\Driver\GettextDriver;
 
 class GettextTest extends PHPUnit_Framework_TestCase
 {
@@ -12,33 +12,33 @@ class GettextTest extends PHPUnit_Framework_TestCase
         include __DIR__.'/../config/config.php';
 
         $this->gettext = new Gettext(
-            (new GettextApi())->setForcedRule($config['forced_rule'])
+            (new GettextDriver())->forceEmulator($config['force_emulator'])
         );
 
         $this->gettext->bindTextDomain('firstdomain', __DIR__."/../locale");
         $this->gettext->bindTextDomain('seconddomain', __DIR__."/../locale");
-
+        
         $this->gettext->setLocale(LC_ALL, 'en_US.UTF-8');
     }
 
     public function testGetText()
     {
         $this->assertEquals(
-            "Welcome to first domain", 
+            "Welcome to first domain",
             $this->gettext->getText("Welcome to first domain")
         );
 
         $this->gettext->textDomain('seconddomain');
 
         $this->assertEquals(
-            "Welcome to first domain !", 
+            "Welcome to first domain !",
             $this->gettext->getText("Welcome to first domain")
         );
 
         $this->gettext->setLocale(LC_ALL, 'id_ID.UTF-8');
 
         $this->assertEquals(
-            "Selamat datang di domain pertama", 
+            "Selamat datang di domain pertama",
             $this->gettext->getText("Welcome to first domain")
         );
     }
@@ -46,7 +46,7 @@ class GettextTest extends PHPUnit_Framework_TestCase
     public function testDGetText()
     {
         $this->assertEquals(
-            "Welcome to first domain", 
+            "Welcome to first domain",
             $this->gettext->dGetText("firstdomain", "Welcome to first domain")
         );
     }
@@ -72,13 +72,13 @@ class GettextTest extends PHPUnit_Framework_TestCase
         $this->gettext->textDomain('seconddomain');
 
         $this->assertEquals(
-            "mouses", 
+            "mouses",
             $this->gettext->nPGetText("device", "mouse", "mouses", 2)
         );
         $this->assertEquals(
-            "mice", 
+            "mice",
             $this->gettext->nPGetText("animal", "mouse", "mice", 2)
-        );   
+        );
     }
 
     public function testDCGetText()
@@ -92,11 +92,11 @@ class GettextTest extends PHPUnit_Framework_TestCase
     public function testDNGetText()
     {
         $this->assertEquals(
-            "pig", 
+            "pig",
             $this->gettext->dNGetText("firstdomain", "pig", "pigs", 1)
         );
         $this->assertEquals(
-            "pigs", 
+            "pigs",
             $this->gettext->dNGetText("firstdomain", "pig", "pigs", 2)
         );
     }
@@ -104,11 +104,11 @@ class GettextTest extends PHPUnit_Framework_TestCase
     public function testDCNGetText()
     {
         $this->assertEquals(
-            "pig", 
+            "pig",
             $this->gettext->dCNGetText("firstdomain", "pig", "pigs", 1, LC_MESSAGES)
         );
         $this->assertEquals(
-            "pigs", 
+            "pigs",
             $this->gettext->dCNGetText("firstdomain", "pig", "pigs", 2, LC_MESSAGES)
         );
     }
@@ -124,24 +124,24 @@ class GettextTest extends PHPUnit_Framework_TestCase
     public function testDNPGetText()
     {
         $this->assertEquals(
-            "mouses", 
+            "mouses",
             $this->gettext->dNPGetText("seconddomain", "device", "mouse", "mouses", 2)
         );
         $this->assertEquals(
-            "mice", 
+            "mice",
             $this->gettext->dNPGetText("seconddomain", "animal", "mouse", "mice", 2)
-        );   
+        );
     }
 
     public function testDCNPGetText()
     {
         $this->assertEquals(
-            "mouses", 
+            "mouses",
             $this->gettext->dCNPGetText("seconddomain", "device", "mouse", "mouses", 2, LC_MESSAGES)
         );
         $this->assertEquals(
-            "mice", 
+            "mice",
             $this->gettext->dCNPGetText("seconddomain", "animal", "mouse", "mice", 2, LC_MESSAGES)
-        );   
+        );
     }
 }

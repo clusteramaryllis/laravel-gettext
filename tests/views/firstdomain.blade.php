@@ -1,1 +1,1 @@
-<h1>{{ _('Welcome to first domain') }}</h1>
+<h1>{{ __('Welcome to first domain') }}</h1>

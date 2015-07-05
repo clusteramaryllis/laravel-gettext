@@ -16,13 +16,13 @@ class ManagerTest extends PHPUnit_Framework_TestCase
     public function testGetterAndSetter()
     {
         $this->assertEquals(
-            array(
-                'en' => array(
+            [
+                'en' => [
                     'locale' => 'en_US',
                     'encoding' => 'utf-8',
                     'plural_forms' => "nplurals=2; plural=(n != 1);"
-                )
-            ), 
+                ]
+            ],
             $this->manager->getLanguages()
         );
         $this->assertFileExists($this->manager->getStoragePath());

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Clusteramaryllis\Gettext\Repositories;
 
@@ -22,6 +22,33 @@ class PoGenerator
      * @var string
      */
     protected $basePath;
+
+    /**
+     * Resolved name.
+     *
+     * @var string
+     */
+    protected $resolvedName = 'gettext';
+
+    /**
+     * Replacements array.
+     *
+     * @var array
+     */
+    protected $replacements = [
+        '__' =>'getText',
+        '_n' =>'nGetText',
+        '_d' =>'dGetText',
+        '_dn' =>'dNGetText',
+        '_dc' =>'dCGetText',
+        '_dcn' =>'dCNGetText',
+        '_p' =>'pGetText',
+        '_dp' =>'dPGetText',
+        '_dcp' =>'dCPGetText',
+        '_np' =>'nPGetText',
+        '_dnp' =>'dNPGetText',
+        '_dcnp' =>'dCNPGetText'
+    ];
 
     /**
      * Repository instance.
@@ -59,7 +86,8 @@ class PoGenerator
 
                 $compiler->setPath($file);
 
-                $contents = $compiler->compileString($this->files->get($file));
+                $contents = $this->parseToken($this->files->get($file));
+                $contents = $compiler->compileString($contents);
                 $compiledPath = $compiler->getCompiledPath($compiler->getPath());
 
                 $this->files->put($compiledPath.'.php', $contents);
@@ -369,6 +397,63 @@ class PoGenerator
         }
 
         return implode("/", $relPath);
+    }
+
+    /**
+     * Set resolved name.
+     *
+     * @param  string $resolvedName
+     * @return $this
+     */
+    public function setResolvedName($resolvedName)
+    {
+        $this->resolvedName = $resolvedName;
+
+        return $this;
+    }
+
+    /**
+     * Set replacements.
+     *
+     * @param  array $replacements
+     * @return $this
+     */
+    public function setReplacements($replacements)
+    {
+        $this->replacements = $replacements;
+
+        return $this;
+    }
+
+    /**
+     * Parsing content.
+     *
+     * @param  string $content
+     * @return string
+     */
+    public function parseToken($content)
+    {
+        $firstStep = $thirdStep = ['pattern'=>[], 'replace'=>[]];
+                
+        foreach ($this->replacements as $key => $value) {
+            // replace class method with relevant function (e.g. : getText => __)
+            $firstStep['pattern'][] = sprintf('/([\w:\\\\]*)%s/', $value);
+            $firstStep['replace'][] = $key;
+            // replace custom object with relevan function ($gettext)
+            $thirdStep['pattern'][] = sprintf('/([\w\$]*?)\-\>(%s)/', $key);
+            $thirdStep['replace'][] = '\2';
+        }
+        // replace resolved call with relevant function (app('gettext'), $app['gettext'])
+        $secondStep = [
+            'pattern' => sprintf('/([\w\$]*?)(\[|\()(\'|\")%s(\'|\")(\)|\])\-\>/', $this->resolvedName),
+            'replace' => ''
+        ];
+
+        $content = preg_replace($firstStep['pattern'], $firstStep['replace'], $content);
+        $content = preg_replace($secondStep['pattern'], $secondStep['replace'], $content);
+        $content = preg_replace($thirdStep['pattern'], $thirdStep['replace'], $content);
+
+        return $content;
     }
 
     /**
