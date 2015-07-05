@@ -433,25 +433,27 @@ class PoGenerator
      */
     public function parseToken($content)
     {
-        $firstStep = $thirdStep = ['pattern'=>[], 'replace'=>[]];
+        $keys = [0,1,2];
+        $step = array_fill_keys($keys, ['pattern'=>[], 'replace'=>[]]);
                 
         foreach ($this->replacements as $key => $value) {
             // replace class method with relevant function (e.g. : getText => __)
-            $firstStep['pattern'][] = sprintf('/([\w:\\\\]*)%s/', $value);
-            $firstStep['replace'][] = $key;
+            $step[0]['pattern'][] = sprintf('/([\w:\\\\]*)%s/', $value);
+            $step[0]['replace'][] = $key;
             // replace custom object with relevan function ($gettext)
-            $thirdStep['pattern'][] = sprintf('/([\w\$]*?)\-\>(%s)/', $key);
-            $thirdStep['replace'][] = '\2';
+            $step[2]['pattern'][] = sprintf('/([\w\$]*?)\-\>(%s)/', $key);
+            $step[2]['replace'][] = '\2';
         }
         // replace resolved call with relevant function (app('gettext'), $app['gettext'])
-        $secondStep = [
-            'pattern' => sprintf('/([\w\$]*?)(\[|\()(\'|\")%s(\'|\")(\)|\])\-\>/', $this->resolvedName),
-            'replace' => ''
-        ];
+        $step[1]['pattern'] = sprintf(
+            '/([\w\$]*?)(\[|\()(\'|\")%s(\'|\")(\)|\])\-\>/',
+            $this->resolvedName
+        );
+        $step[1]['replace'] = '';
 
-        $content = preg_replace($firstStep['pattern'], $firstStep['replace'], $content);
-        $content = preg_replace($secondStep['pattern'], $secondStep['replace'], $content);
-        $content = preg_replace($thirdStep['pattern'], $thirdStep['replace'], $content);
+        foreach ($step as $value) {
+            $content = preg_replace($value['pattern'], $value['replace'], $content);
+        }
 
         return $content;
     }
