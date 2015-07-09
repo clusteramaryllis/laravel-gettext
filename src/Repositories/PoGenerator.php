@@ -433,14 +433,13 @@ class PoGenerator
      */
     public function parseToken($content)
     {
-        $keys = [0,1,2];
-        $step = array_fill_keys($keys, ['pattern'=>[], 'replace'=>[]]);
+        $step = array_fill_keys(range(0, 2), ['pattern'=>[], 'replace'=>[]]);
                 
         foreach ($this->replacements as $key => $value) {
             // replace class method with relevant function (e.g. : getText => __)
             $step[0]['pattern'][] = sprintf('/([\w:\\\\]*)%s/', $value);
             $step[0]['replace'][] = $key;
-            // replace custom object with relevan function ($gettext)
+            // replace custom object with relevant function ($gettext)
             $step[2]['pattern'][] = sprintf('/([\w\$]*?)\-\>(%s)/', $key);
             $step[2]['replace'][] = '\2';
         }
