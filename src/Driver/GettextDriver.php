@@ -271,7 +271,7 @@ class GettextDriver implements GettextDriverContract
             $this->currentLocale = $this->getDefaultLocale('', $category);
             $this->emulateGettext = true;
         } else {
-            $this->currentLocale = $result;
+            $this->currentLocale = $this->fetchLocale($result);
             $this->emulateGettext = false;
         }
 
@@ -459,7 +459,10 @@ class GettextDriver implements GettextDriverContract
     }
 
     /**
-     * {@inheritDoc}
+     * Invoke emulator.
+     *
+     * @param  bool|\Closure $rule
+     * @return $this
      */
     public function forceEmulator($rule)
     {
@@ -468,6 +471,30 @@ class GettextDriver implements GettextDriverContract
         $this->setLocale(LC_ALL, $this->currentLocale);
 
         return $this;
+    }
+
+    /**
+     * Fetch possible locale.
+     *
+     * @param  string $text
+     * @return string
+     */
+    public function fetchLocale($text)
+    {
+        $locales = explode(';', $text);
+
+        if (! empty($locales)) {
+            foreach ($locales as $locale) {
+                if (strpos($locale, "=") !== false) {
+                    $value = explode('=', $locale);
+                    return $value[1];
+                }
+            }
+
+            return reset($locales);
+        }
+
+        return '';
     }
 
     /**

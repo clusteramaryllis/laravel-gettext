@@ -433,17 +433,19 @@ class PoGenerator
      */
     public function parseToken($content)
     {
-        $step = array_fill_keys(range(0, 2), ['pattern'=>[], 'replace'=>[]]);
+        $step = array_fill_keys(range(0, 2), ['pattern' => [], 'replace' => []]);
                 
         foreach ($this->replacements as $key => $value) {
-            // replace class method with relevant function (e.g. : getText => __)
+            // replace static class with correspondent function (e.g. : StaticClass::getText => __)
             $step[0]['pattern'][] = sprintf('/([\w:\\\\]*)%s/', $value);
             $step[0]['replace'][] = $key;
-            // replace custom object with relevant function ($gettext)
+            // replace instance of object with correspondent function (e.g. : $gettext->getText => __)
             $step[2]['pattern'][] = sprintf('/([\w\$]*?)\-\>(%s)/', $key);
             $step[2]['replace'][] = '\2';
         }
-        // replace resolved call with relevant function (app('gettext'), $app['gettext'])
+
+        // replace DI resolve call with correspondent function
+        // (e.g. : app('gettext')->getText, $app['gettext']->getText => __)
         $step[1]['pattern'] = sprintf(
             '/([\w\$]*?)(\[|\()(\'|\")%s(\'|\")(\)|\])\-\>/',
             $this->resolvedName
