@@ -75,7 +75,7 @@ return [
      * Very helpful if you don't have access to disable php-gettext extension.
      * bool|\Closure
      */
-    'force_emulator' => function () {
+    'enable_emulator' => function () {
         return (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' &&
             version_compare(PHP_VERSION, '5.4.19') > 0);
     },

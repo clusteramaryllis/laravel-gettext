@@ -206,7 +206,17 @@ class GettextDriver implements GettextDriverContract
             }
         }
 
-        return $locale;
+        $locales = explode(';', $locale);
+
+        foreach ($locales as $lc) {
+            if (strpos($lc, "=") !== false) {
+                $value = explode('=', $lc);
+
+                return $value[1];
+            }
+        }
+
+        return reset($locales);
     }
 
     /**
@@ -268,10 +278,10 @@ class GettextDriver implements GettextDriverContract
             @putenv("LANG={$locales[0]}");
             @putenv("LANGUAGE={$locales[0]}");
 
-            $this->currentLocale = $this->getDefaultLocale('', $category);
+            $this->currentLocale = $this->getDefaultLocale('', $strCategory);
             $this->emulateGettext = true;
         } else {
-            $this->currentLocale = $this->fetchLocale($result);
+            $this->currentLocale = $this->getDefaultLocale($result, $strCategory);
             $this->emulateGettext = false;
         }
 
@@ -459,42 +469,17 @@ class GettextDriver implements GettextDriverContract
     }
 
     /**
-     * Invoke emulator.
+     * Enable emulator.
      *
      * @param  bool|\Closure $rule
      * @return $this
      */
-    public function forceEmulator($rule)
+    public function enableEmulator($rule)
     {
         $this->rule = ($rule instanceof Closure) ? $rule->__invoke() : $rule;
         // make sure to check again
-        $this->setLocale(LC_ALL, $this->currentLocale);
 
         return $this;
-    }
-
-    /**
-     * Fetch possible locale.
-     *
-     * @param  string $text
-     * @return string
-     */
-    public function fetchLocale($text)
-    {
-        $locales = explode(';', $text);
-
-        if (! empty($locales)) {
-            foreach ($locales as $locale) {
-                if (strpos($locale, "=") !== false) {
-                    $value = explode('=', $locale);
-                    return $value[1];
-                }
-            }
-
-            return reset($locales);
-        }
-
-        return '';
     }
 
     /**

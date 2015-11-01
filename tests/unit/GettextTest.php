@@ -12,7 +12,7 @@ class GettextTest extends PHPUnit_Framework_TestCase
         include __DIR__.'/../config/config.php';
 
         $this->gettext = new Gettext(
-            (new GettextDriver())->forceEmulator($config['force_emulator'])
+            (new GettextDriver())->enableEmulator($config['force_emulator'])
         );
 
         $this->gettext->bindTextDomain('firstdomain', __DIR__."/../locale");

@@ -21,9 +21,6 @@ class Gettext
     public function __construct(GettextDriver $driver)
     {
         $this->driver = $driver;
-
-        // initiate to default
-        $this->setLocale(LC_ALL, $this->driver->getCurrentLocale());
     }
 
     /**

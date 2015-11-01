@@ -22,8 +22,8 @@ class GettextServiceProvider extends ServiceProvider
         $this->bootCreateCommand();
         $this->bootUpdateCommand();
 
-        $this->app->make('gettext.driver')->forceEmulator(
-            $this->app->make('config')->get('gettext.force_emulator')
+        $this->app->make('gettext.driver')->enableEmulator(
+            $this->app->make('config')->get('gettext.enable_emulator')
         );
     }
 
