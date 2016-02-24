@@ -4,13 +4,13 @@
 
 ### Installation
 
-Laravel 5.x Installation
+Laravel 5.2 Installation
 
 Add the composer repository to your *composer.json* file:
 
 ```json
 "require": {
-    "clusteramaryllis/gettext": "1.2.x"
+    "clusteramaryllis/gettext": "1.3.x"
 }
 ```
 
