@@ -50,7 +50,7 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
 
                 $this->assertEquals(
                     $compiler->compileString($contents),
-                    $this->files->get($this->config['storage_path']."/".md5($file->getRealpath()).".php")
+                    $this->files->get($this->config['storage_path']."/".sha1($file->getRealpath()).".php")
                 );
             }
         }

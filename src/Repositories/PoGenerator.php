@@ -87,13 +87,15 @@ class PoGenerator
             );
 
             foreach ($files as $file) {
-                $compiler->setPath($file->getRealpath());
+                $path = $file->getRealpath();
 
-                $contents = $this->parseToken($this->files->get($file->getRealpath()));
+                $compiler->setPath($path);
+
+                $contents = $this->parseToken($this->files->get($path));
                 $contents = $compiler->compileString($contents);
                 $compiledPath = $compiler->getCompiledPath($compiler->getPath());
 
-                $this->files->put($compiledPath.'.php', $contents);
+                $this->files->put($compiledPath, $contents);
             }
         }
 
