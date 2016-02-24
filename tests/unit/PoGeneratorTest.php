@@ -38,14 +38,19 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
         $this->generator->compileViews($this->config['paths'], $this->config['storage_path']);
 
         foreach ($this->config['paths'] as $path) {
-            $files = glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
+            $files = new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator(realpath($path))
+                ),
+                '/^.+\.blade\.php$/i'
+            );
 
             foreach ($files as $file) {
-                $contents = $this->generator->parseToken($this->files->get($file));
+                $contents = $this->generator->parseToken($this->files->get($file->getRealpath()));
 
                 $this->assertEquals(
                     $compiler->compileString($contents),
-                    $this->files->get($this->config['storage_path']."/".md5($file).".php")
+                    $this->files->get($this->config['storage_path']."/".md5($file->getRealpath()).".php")
                 );
             }
         }
@@ -71,7 +76,11 @@ class PoGeneratorTest extends PHPUnit_Framework_TestCase
             $timestamp
         );
 
-        $this->assertEquals($this->files->get(__DIR__.'/../locale/en_US/LC_MESSAGES/test.po'), $content);
+        // fix windows carriage return problem
+        $this->assertEquals(
+            preg_split('/\r\n|\r|\n/', $this->files->get(__DIR__.'/../locale/en_US/LC_MESSAGES/test.po')), 
+            preg_split('/\r\n|\r|\n/', $content)
+        );
     }
 
     public function testAddLocale()

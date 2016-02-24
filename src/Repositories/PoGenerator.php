@@ -2,7 +2,9 @@
 
 namespace Clusteramaryllis\Gettext\Repositories;
 
-use Illuminate\Support\Str;
+use RegexIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\BladeCompiler;
 use Clusteramaryllis\Gettext\Exception\ResourceNotFoundException;
@@ -77,16 +79,17 @@ class PoGenerator
         $compiler = new BladeCompiler($this->files, $storagePath);
 
         foreach ($paths as $path) {
-            $files = $this->files->glob(realpath($path).'/{,**/}*.php', GLOB_BRACE);
+            $files = new RegexIterator(
+                new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator(realpath($path))
+                ),
+                '/^.+\.blade\.php$/i'
+            );
 
             foreach ($files as $file) {
-                if (! Str::endsWith(strtolower($file), '.blade.php')) {
-                    continue;
-                }
+                $compiler->setPath($file->getRealpath());
 
-                $compiler->setPath($file);
-
-                $contents = $this->parseToken($this->files->get($file));
+                $contents = $this->parseToken($this->files->get($file->getRealpath()));
                 $contents = $compiler->compileString($contents);
                 $compiledPath = $compiler->getCompiledPath($compiler->getPath());
 

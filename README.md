@@ -4,7 +4,7 @@
 
 ### Installation
 
-Laravel 5.1 Installation
+Laravel 5.x Installation
 
 Add the composer repository to your *composer.json* file:
 
