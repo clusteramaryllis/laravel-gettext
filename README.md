@@ -14,6 +14,7 @@ Add the composer repository to your *composer.json* file:
 }
 ```
 
+* For Laravel 5.1, checkout [1.2 branch](https://github.com/clusteramaryllis/laravel-gettext/tree/1.2)
 * For Laravel 4.2, checkout [0.3 branch](https://github.com/clusteramaryllis/laravel-gettext/tree/0.3)
 
 And run `composer update`. Once finished, register via service provider in `config/app.php` in the `providers` array:
