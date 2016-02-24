@@ -87,11 +87,11 @@ class PoGenerator
             );
 
             foreach ($files as $file) {
-                $path = $file->getRealpath();
+                $fullPath = $file->getRealpath();
 
-                $compiler->setPath($path);
+                $compiler->setPath($fullPath);
 
-                $contents = $this->parseToken($this->files->get($path));
+                $contents = $this->parseToken($this->files->get($fullPath));
                 $contents = $compiler->compileString($contents);
                 $compiledPath = $compiler->getCompiledPath($compiler->getPath());
 
