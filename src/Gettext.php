@@ -2,7 +2,7 @@
 
 namespace Clusteramaryllis\Gettext;
 
-use Clusteramaryllis\Gettext\Driver\GettextDriver;
+use Clusteramaryllis\Gettext\Contracts\GettextDriver;
 
 class Gettext
 {
